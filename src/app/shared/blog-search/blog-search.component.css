@@ -1,0 +1,532 @@
+/* ===== BLOG SEARCH COMPONENT STYLES ===== */
+
+/* Animaciones personalizadas */
+@keyframes searchFocus {
+  from {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  to {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes filterPanelExpand {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tagPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes suggestionHover {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: rgba(59, 130, 246, 0.05);
+  }
+}
+
+@keyframes loadingSpinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Container principal */
+.blog-search-container {
+  @apply relative w-full max-w-2xl mx-auto;
+  animation: dropdownSlide 0.3s ease-out;
+}
+
+.blog-search-container.search-active {
+  @apply z-50;
+}
+
+/* Input de búsqueda */
+.search-input-container {
+  @apply relative;
+}
+
+.search-input {
+  @apply transition-all duration-300 ease-in-out;
+  @apply shadow-sm hover:shadow-md focus:shadow-lg;
+}
+
+.search-input:focus {
+  animation: searchFocus 0.3s ease-out;
+}
+
+.search-input.search-loading {
+  @apply pr-24;
+}
+
+/* Dropdown de resultados */
+.search-dropdown {
+  animation: dropdownSlide 0.2s ease-out;
+  @apply backdrop-blur-sm;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .search-dropdown {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Sugerencias */
+.suggestions-section {
+  @apply relative;
+}
+
+.suggestion-item {
+  @apply transition-all duration-200;
+  @apply relative overflow-hidden;
+}
+
+.suggestion-item:hover {
+  @apply transform translate-x-1;
+  animation: suggestionHover 0.2s ease-out forwards;
+}
+
+.suggestion-item:focus {
+  @apply ring-2 ring-blue-500 ring-inset;
+}
+
+.suggestion-item::before {
+  content: "";
+  @apply absolute left-0 top-0 bottom-0 w-0 bg-blue-500;
+  @apply transition-all duration-300;
+}
+
+.suggestion-item:hover::before {
+  @apply w-1;
+}
+
+.suggestion-icon {
+  @apply transition-transform duration-200;
+}
+
+.suggestion-item:hover .suggestion-icon {
+  @apply transform scale-110;
+}
+
+.suggestion-text {
+  @apply transition-colors duration-200;
+}
+
+.suggestion-item:hover .suggestion-text {
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+/* Historial */
+.history-section {
+  @apply relative;
+}
+
+.history-item {
+  @apply transition-all duration-200;
+  @apply relative;
+}
+
+.history-item:hover {
+  @apply transform translate-x-1;
+}
+
+.history-remove {
+  @apply transition-all duration-200;
+  @apply transform scale-0;
+}
+
+.history-item:hover .history-remove {
+  @apply transform scale-100;
+}
+
+/* Panel de filtros */
+.filters-panel {
+  animation: filterPanelExpand 0.3s ease-out;
+  @apply border border-gray-200 dark:border-gray-700;
+  @apply shadow-sm;
+}
+
+.filter-group {
+  @apply space-y-2;
+}
+
+.filter-label {
+  @apply font-medium;
+  @apply transition-colors duration-200;
+}
+
+.filter-options {
+  @apply space-y-1;
+}
+
+.filter-option {
+  @apply transition-all duration-200;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-800;
+  @apply rounded-md p-1;
+}
+
+.filter-checkbox {
+  @apply transition-all duration-200;
+  @apply focus:ring-2 focus:ring-blue-500;
+}
+
+.filter-select,
+.filter-input {
+  @apply transition-all duration-300;
+  @apply hover:border-gray-400 dark:hover:border-gray-500;
+  @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+/* Tags */
+.filter-tags {
+  @apply flex flex-wrap gap-2;
+}
+
+.tag-filter {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-105;
+  @apply focus:ring-2 focus:ring-blue-500;
+}
+
+.tag-filter:hover {
+  animation: tagPulse 0.6s ease-in-out;
+}
+
+.tag-active {
+  @apply bg-blue-500 text-white border-blue-500;
+  @apply shadow-md;
+}
+
+.tag-inactive {
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+  @apply border-gray-300 dark:border-gray-600;
+  @apply hover:bg-gray-200 dark:hover:bg-gray-600;
+}
+
+/* Filtros activos */
+.active-filters {
+  @apply space-x-2;
+}
+
+.active-filter {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-105;
+  @apply shadow-sm hover:shadow-md;
+}
+
+.active-filter button {
+  @apply transition-all duration-200;
+  @apply hover:bg-black/10 dark:hover:bg-white/10;
+  @apply rounded-full p-0.5;
+}
+
+/* Estados de loading */
+.loading-spinner {
+  animation: loadingSpinner 1s linear infinite;
+}
+
+/* Estados vacíos */
+.empty-state {
+  @apply transition-all duration-300;
+  @apply opacity-75 hover:opacity-100;
+}
+
+.empty-state svg {
+  @apply transition-transform duration-300;
+}
+
+.empty-state:hover svg {
+  @apply transform scale-110;
+}
+
+/* Mensajes de error */
+.error-messages {
+  @apply space-y-2;
+}
+
+.error-message {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-[1.01];
+}
+
+/* Dark mode específico */
+.dark .search-input {
+  @apply border-gray-600 bg-gray-800 text-gray-100;
+  @apply placeholder-gray-400;
+}
+
+.dark .search-input:focus {
+  @apply border-blue-500 ring-blue-500;
+}
+
+.dark .suggestion-item:hover {
+  @apply bg-gray-700;
+}
+
+.dark .history-item:hover {
+  @apply bg-gray-700;
+}
+
+.dark .filter-option:hover {
+  @apply bg-gray-700;
+}
+
+/* Responsive específico */
+@media (max-width: 768px) {
+  .blog-search-container {
+    @apply px-2;
+  }
+
+  .search-dropdown {
+    @apply mx-2 left-0 right-0;
+  }
+
+  .filters-grid {
+    @apply grid-cols-1 gap-3;
+  }
+
+  .filter-tags {
+    @apply gap-1;
+  }
+
+  .tag-filter {
+    @apply text-xs px-2 py-1;
+  }
+
+  .active-filters {
+    @apply flex-wrap gap-1;
+  }
+
+  .date-filters {
+    @apply grid-cols-1 gap-3;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    @apply text-sm py-2 pl-8 pr-16;
+  }
+
+  .suggestion-item,
+  .history-item {
+    @apply px-2 py-2;
+  }
+
+  .suggestion-text,
+  .history-query {
+    @apply text-xs;
+  }
+
+  .filters-panel {
+    @apply p-3;
+  }
+
+  .filter-group {
+    @apply space-y-1;
+  }
+
+  .filter-options {
+    @apply max-h-24;
+  }
+}
+
+/* Estados de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .blog-search-container,
+  .search-dropdown,
+  .filters-panel,
+  .suggestion-item,
+  .history-item,
+  .tag-filter,
+  .active-filter,
+  .loading-spinner {
+    animation: none;
+  }
+
+  .suggestion-item:hover,
+  .history-item:hover,
+  .tag-filter:hover {
+    @apply transform-none;
+  }
+}
+
+/* Focus visible para mejor accesibilidad */
+.search-input:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+.suggestion-item:focus-visible,
+.history-item:focus-visible,
+.tag-filter:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+.filter-checkbox:focus-visible,
+.filter-select:focus-visible,
+.filter-input:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+/* Estados de alta contraste */
+@media (prefers-contrast: high) {
+  .search-input {
+    @apply border-2 border-black dark:border-white;
+  }
+
+  .search-dropdown {
+    @apply border-2 border-black dark:border-white;
+  }
+
+  .suggestion-item:hover,
+  .history-item:hover {
+    @apply bg-gray-200 dark:bg-gray-600;
+  }
+
+  .tag-active {
+    @apply bg-black dark:bg-white text-white dark:text-black;
+    @apply border-black dark:border-white;
+  }
+}
+
+/* Print styles */
+@media print {
+  .search-dropdown,
+  .filters-panel {
+    @apply hidden;
+  }
+
+  .search-input {
+    @apply border border-gray-400;
+  }
+}
+
+/* Skeleton loaders */
+.search-skeleton {
+  @apply animate-pulse;
+}
+
+.search-skeleton .skeleton-input {
+  @apply bg-gray-200 dark:bg-gray-700 rounded-lg;
+  @apply h-12 w-full;
+}
+
+.search-skeleton .skeleton-suggestion {
+  @apply bg-gray-200 dark:bg-gray-700 rounded;
+  @apply h-10 w-full mb-2;
+}
+
+/* Utilidades específicas del componente */
+.search-highlight {
+  @apply bg-yellow-200 dark:bg-yellow-800;
+  @apply px-1 rounded;
+}
+
+.search-visible {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.search-hidden {
+  @apply opacity-0 pointer-events-none;
+}
+
+/* Efectos de transición */
+.search-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.search-bounce {
+  @apply transform hover:scale-105 active:scale-95;
+}
+
+/* Estilos para scroll personalizado */
+.search-dropdown::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.search-dropdown::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800 rounded;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded;
+  @apply hover:bg-gray-400 dark:hover:bg-gray-500;
+}
+
+.filter-options::-webkit-scrollbar {
+  @apply w-1;
+}
+
+.filter-options::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded;
+}
+
+/* Mejoras de performance */
+.search-dropdown,
+.filters-panel {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+.suggestion-item,
+.history-item {
+  will-change: transform, background-color;
+}
+
+/* Estados de interacción mejorados */
+.interactive-element {
+  @apply transition-all duration-200;
+  @apply transform active:scale-95;
+  @apply focus:ring-2 focus:ring-blue-500 focus:ring-offset-1;
+  @apply focus:outline-none;
+}
+
+/* Indicadores visuales */
+.search-active-indicator {
+  @apply absolute -top-1 -right-1 w-2 h-2;
+  @apply bg-blue-500 rounded-full;
+  @apply animate-pulse;
+}
+
+.filter-active-indicator {
+  @apply absolute -top-1 -right-1 w-2 h-2;
+  @apply bg-orange-500 rounded-full;
+}

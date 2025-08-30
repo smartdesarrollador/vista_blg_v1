@@ -1,0 +1,334 @@
+<!-- Blog Card Container -->
+<article
+  [class]="cardClasses()"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  (click)="onCardClick($event)"
+  [attr.aria-label]="'Artículo: ' + post.title"
+  role="article"
+  tabindex="0"
+  (keydown.enter)="onCardClick($event)"
+  (keydown.space)="onCardClick($event)"
+>
+  <!-- Featured Badge -->
+  @if (post.featured && finalConfig().layout === 'featured') {
+  <div class="absolute top-4 left-4 z-10">
+    <span
+      class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg"
+    >
+      ✨ Destacado
+    </span>
+  </div>
+  }
+
+  <!-- Image Container -->
+  <div class="relative overflow-hidden">
+    @if (!imageError()) {
+    <img
+      [ngSrc]="post.featuredImage"
+      [alt]="post.featuredImageAlt"
+      [class]="imageClasses()"
+      [priority]="priority"
+      [loading]="loading"
+      (load)="onImageLoad()"
+      (error)="onImageError()"
+      [width]="finalConfig().layout === 'featured' ? 800 : 600"
+      [height]="finalConfig().layout === 'featured' ? 450 : 300"
+    />
+    } @else {
+    <!-- Fallback cuando la imagen falla -->
+    <div
+      [class]="
+        imageClasses() +
+        ' bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center'
+      "
+    >
+      <svg
+        class="w-12 h-12 text-gray-400 dark:text-gray-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </div>
+    }
+
+    <!-- Loading Overlay -->
+    @if (!imageLoaded() && !imageError()) {
+    <div
+      class="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center"
+    >
+      <div
+        class="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
+      ></div>
+    </div>
+    }
+
+    <!-- Gradient Overlay for better text readability -->
+    @if (finalConfig().layout === 'featured') {
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"
+    ></div>
+    }
+
+    <!-- Action Buttons Overlay -->
+    <div
+      class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+    >
+      <!-- Like Button -->
+      <button
+        type="button"
+        (click)="onLikeClick($event)"
+        class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:scale-110 transition-transform duration-200"
+        [attr.aria-label]="isLiked() ? 'Quitar me gusta' : 'Me gusta'"
+      >
+        <svg
+          class="w-4 h-4 transition-colors duration-200"
+          [class.text-red-500]="isLiked()"
+          [class.text-gray-600]="!isLiked()"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </button>
+
+      <!-- Share Button -->
+      <button
+        type="button"
+        (click)="onShareClick($event)"
+        class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:scale-110 transition-transform duration-200"
+        aria-label="Compartir artículo"
+      >
+        <svg
+          class="w-4 h-4 text-gray-600 dark:text-gray-300"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Container -->
+  <div [class]="finalConfig().layout === 'list' ? 'flex-1 p-6' : 'p-6'">
+    <!-- Categories -->
+    @if (finalConfig().showCategories && post.categories &&
+    post.categories.length > 0) {
+    <div class="flex flex-wrap gap-2 mb-3">
+      @for (category of post.categories; track trackByCategory($index,
+      category.id)) {
+      <button
+        type="button"
+        (click)="onCategoryClick($event, category.id)"
+        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-200 hover:opacity-80"
+        [style.background-color]="getCategoryColor(category.id) + '20'"
+        [style.color]="getCategoryColor(category.id)"
+        [attr.aria-label]="'Categoría: ' + category.name"
+      >
+        @if (category.icon) {
+        <span class="mr-1" [attr.aria-hidden]="true">{{ category.icon }}</span>
+        }
+        {{ category.name }}
+      </button>
+      }
+    </div>
+    }
+
+    <!-- Title -->
+    <h3
+      class="font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200"
+    >
+      <a
+        [routerLink]="['/blog', post.slug]"
+        class="after:absolute after:inset-0"
+        [attr.aria-label]="'Leer artículo: ' + post.title"
+      >
+        @switch (finalConfig().layout) { @case ('featured') {
+        <span class="text-2xl">{{ post.title }}</span>
+        } @case ('compact') {
+        <span class="text-base">{{ truncateText(post.title, 50) }}</span>
+        } @default {
+        <span class="text-lg">{{ post.title }}</span>
+        } }
+      </a>
+    </h3>
+
+    <!-- Excerpt -->
+    @if (finalConfig().showExcerpt && finalConfig().layout !== 'compact') {
+    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+      @switch (finalConfig().layout) { @case ('featured') {
+      {{ truncateText(post.excerpt, 200) }}
+      } @case ('list') {
+      {{ truncateText(post.excerpt, 150) }}
+      } @default {
+      {{ truncateText(post.excerpt, 120) }}
+      } }
+    </p>
+    }
+
+    <!-- Tags -->
+    @if (finalConfig().showTags && post.tags && post.tags.length > 0 &&
+    finalConfig().layout !== 'compact') {
+    <div class="flex flex-wrap gap-1 mb-4">
+      @for (tag of post.tags.slice(0, 3); track trackByTag($index, tag)) {
+      <button
+        type="button"
+        (click)="onTagClick($event, tag)"
+        class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+        [attr.aria-label]="'Tag: ' + tag"
+      >
+        #{{ tag }}
+      </button>
+      } @if (post.tags.length > 3) {
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        +{{ post.tags.length - 3 }} más
+      </span>
+      }
+    </div>
+    }
+
+    <!-- Meta Information -->
+    <div
+      class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400"
+    >
+      <!-- Left Side: Author & Date -->
+      <div class="flex items-center space-x-4">
+        <!-- Author -->
+        @if (finalConfig().showAuthor && post.author) {
+        <button
+          type="button"
+          (click)="onAuthorClick($event)"
+          class="flex items-center space-x-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 relative z-10"
+          [attr.aria-label]="'Autor: ' + post.author.name"
+        >
+          <img
+            [src]="post.author.avatar"
+            [alt]="'Avatar de ' + post.author.name"
+            class="w-6 h-6 rounded-full object-cover"
+            loading="lazy"
+          />
+          <span class="font-medium">{{ post.author.name }}</span>
+        </button>
+        }
+
+        <!-- Date -->
+        @if (finalConfig().showDate && post.publishedAt) {
+        <time
+          [dateTime]="post.publishedAt.toISOString()"
+          class="flex items-center space-x-1"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <span>{{ formatDate(post.publishedAt) }}</span>
+        </time>
+        }
+      </div>
+
+      <!-- Right Side: Reading Time & Counters -->
+      <div class="flex items-center space-x-3">
+        <!-- Reading Time -->
+        @if (finalConfig().showReadingTime) {
+        <div class="flex items-center space-x-1" title="Tiempo de lectura">
+          <svg
+            class="w-4 h-4"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <span>{{ getReadingTimeText(post.readingTime) }}</span>
+        </div>
+        }
+
+        <!-- Counters -->
+        @if (finalConfig().showCounters) {
+        <div class="flex items-center space-x-3">
+          <!-- Views -->
+          <div class="flex items-center space-x-1" title="Visualizaciones">
+            <svg
+              class="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+              <path
+                fill-rule="evenodd"
+                d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span>{{ post.views }}</span>
+          </div>
+
+          <!-- Likes -->
+          <div class="flex items-center space-x-1" title="Me gusta">
+            <svg
+              class="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span>{{ post.likes }}</span>
+          </div>
+
+          <!-- Comments -->
+          <div class="flex items-center space-x-1" title="Comentarios">
+            <svg
+              class="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span>{{ post.commentsCount }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Focus Ring for Accessibility -->
+  <div
+    class="absolute inset-0 rounded-xl ring-2 ring-blue-500 ring-offset-2 opacity-0 focus-within:opacity-100 transition-opacity duration-200 pointer-events-none"
+  ></div>
+</article>

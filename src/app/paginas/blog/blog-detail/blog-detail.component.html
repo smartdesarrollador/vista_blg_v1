@@ -1,0 +1,764 @@
+<!-- ===== BLOG DETAIL PAGE ===== -->
+<div class="blog-detail-container min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- Reading Progress Bar -->
+  <div
+    *ngIf="config().showReadingProgress && hasContent()"
+    class="reading-progress-bar fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 z-50"
+  >
+    <div
+      class="progress-fill h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+      [style.width.%]="readingProgress().percentage"
+    ></div>
+  </div>
+
+  <!-- Breadcrumbs -->
+  <div
+    class="breadcrumb-section bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4"
+  >
+    <div class="container mx-auto px-4">
+      <app-breadcrumb></app-breadcrumb>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state py-16">
+    <div class="container mx-auto px-4">
+      <div class="loading-content max-w-4xl mx-auto">
+        <!-- Header skeleton -->
+        <div class="header-skeleton animate-pulse mb-8">
+          <div
+            class="bg-gray-200 dark:bg-gray-700 h-8 rounded w-3/4 mb-4"
+          ></div>
+          <div
+            class="bg-gray-200 dark:bg-gray-700 h-6 rounded w-1/2 mb-4"
+          ></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-64 rounded-lg mb-6"></div>
+        </div>
+
+        <!-- Content skeleton -->
+        <div class="content-skeleton animate-pulse space-y-4">
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-full"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-5/6"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-4/5"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-full"></div>
+          <div class="bg-gray-200 dark:bg-gray-700 h-4 rounded w-3/4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="hasError()" class="error-state py-16">
+    <div class="container mx-auto px-4">
+      <div class="error-content max-w-md mx-auto text-center">
+        <div class="error-icon mb-6">
+          <svg
+            class="mx-auto h-16 w-16 text-red-400 dark:text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <h1
+          class="error-title text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+        >
+          Artículo no encontrado
+        </h1>
+        <p class="error-description text-gray-600 dark:text-gray-400 mb-6">
+          {{
+            blogState().errorMessage ||
+              "El artículo que buscas no existe o ha sido eliminado."
+          }}
+        </p>
+        <a
+          routerLink="/blog"
+          class="error-action bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+        >
+          Ver todos los artículos
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main *ngIf="hasContent()" class="main-content">
+    <article class="blog-article py-8">
+      <div class="container mx-auto px-4">
+        <div class="article-wrapper max-w-4xl mx-auto">
+          <!-- Article Header -->
+          <header class="article-header text-center mb-12">
+            <!-- Categories -->
+            <div class="article-categories mb-4">
+              <div class="categories-list flex flex-wrap justify-center gap-2">
+                <button
+                  *ngFor="let category of currentPost()!.categories"
+                  type="button"
+                  (click)="onCategoryClick({ post: currentPost()!, categoryId: category.id })"
+                  class="category-tag px-3 py-1 text-sm font-medium rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {{ category.name }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Title -->
+            <h1
+              class="article-title text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6 leading-tight"
+            >
+              {{ currentPost()!.title }}
+            </h1>
+
+            <!-- Excerpt -->
+            <p
+              class="article-excerpt text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto leading-relaxed"
+            >
+              {{ currentPost()!.excerpt }}
+            </p>
+
+            <!-- Article Meta -->
+            <div
+              class="article-meta flex flex-col md:flex-row items-center justify-center gap-6 text-sm text-gray-600 dark:text-gray-400"
+            >
+              <!-- Author Info -->
+              <div
+                class="author-info flex items-center space-x-3 cursor-pointer"
+                (click)="onAuthorClick()"
+              >
+                <img
+                  [src]="currentPost()!.author?.avatar || '/assets/images/default-avatar.jpg'"
+                  [alt]="currentPost()!.author?.name || 'Autor'"
+                  class="author-avatar w-12 h-12 rounded-full border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 transition-colors"
+                />
+                <div class="author-details text-left">
+                  <p
+                    class="author-name font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
+                  >
+                    {{ currentPost()!.author?.name || 'Autor desconocido' }}
+                  </p>
+                  <p class="author-role text-xs">
+                    {{ currentPost()!.author?.bio || '' }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Date and Reading Time -->
+              <div class="meta-info flex items-center space-x-4">
+                <div class="publish-date flex items-center space-x-1">
+                  <svg
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span>{{ formatDate(currentPost()!.publishedAt || currentPost()!.createdAt) }}</span>
+                </div>
+
+                <div class="reading-time flex items-center space-x-1">
+                  <svg
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>{{ currentPost()!.readingTime }} min de lectura</span>
+                </div>
+
+                <div class="view-count flex items-center space-x-1">
+                  <svg
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  <span>{{ currentPost()!.views }} vistas</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Featured Image -->
+            <div class="featured-image mt-8">
+              <img
+                [ngSrc]="currentPost()!.featuredImage"
+                [alt]="currentPost()!.title"
+                class="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
+                width="800"
+                height="600"
+              />
+            </div>
+          </header>
+
+          <!-- Article Actions -->
+          <div
+            class="article-actions sticky top-4 z-40 bg-white dark:bg-gray-800 rounded-full shadow-lg p-2 mb-8 flex items-center justify-between max-w-xs mx-auto border border-gray-200 dark:border-gray-700"
+          >
+            <!-- Like Button -->
+            <button
+              type="button"
+              (click)="toggleLike()"
+              class="action-btn like-btn p-3 rounded-full transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-500"
+              [class.liked]="false"
+              [attr.aria-label]="'Me gusta'"
+            >
+              <svg
+                class="h-5 w-5"
+                [class.text-red-500]="false"
+                [class.text-gray-400]="true"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                />
+              </svg>
+              <span class="sr-only"
+                >{{ currentPost()!.likes }} me gusta</span
+              >
+            </button>
+
+            <!-- Share Button -->
+            <button
+              *ngIf="config().showSocialShare"
+              type="button"
+              (click)="toggleShareModal()"
+              class="action-btn share-btn p-3 rounded-full transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400 hover:text-blue-500"
+              [attr.aria-label]="'Compartir artículo'"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                />
+              </svg>
+            </button>
+
+            <!-- Table of Contents Button -->
+            <button
+              *ngIf="
+                config().showTableOfContents && tableOfContents().length > 0
+              "
+              type="button"
+              (click)="toggleTableOfContents()"
+              class="action-btn toc-btn p-3 rounded-full transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-400 hover:text-gray-600"
+              [attr.aria-label]="'Índice del artículo'"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h7"
+                />
+              </svg>
+            </button>
+
+            <!-- Print Button -->
+            <button
+              *ngIf="config().enablePrintVersion"
+              type="button"
+              (click)="printPost()"
+              class="action-btn print-btn p-3 rounded-full transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-400 hover:text-gray-600"
+              [attr.aria-label]="'Imprimir artículo'"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Article Content -->
+          <div
+            class="article-content-wrapper grid grid-cols-1 lg:grid-cols-12 gap-8"
+          >
+            <!-- Main Content -->
+            <div
+              class="blog-content lg:col-span-9 prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-900/20 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-img:rounded-lg prose-img:shadow-lg prose-table:border-collapse prose-th:border prose-td:border prose-th:bg-gray-50 dark:prose-th:bg-gray-800"
+              [innerHTML]="sanitizedContent()"
+            ></div>
+
+            <!-- Side Content -->
+            <aside class="article-sidebar lg:col-span-3">
+              <!-- Reading Progress (Desktop) -->
+              <div
+                *ngIf="config().showReadingProgress"
+                class="reading-progress-sidebar hidden lg:block sticky top-8 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6"
+              >
+                <h3
+                  class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3"
+                >
+                  Progreso de lectura
+                </h3>
+                <div
+                  class="progress-info text-sm text-gray-600 dark:text-gray-400 space-y-2"
+                >
+                  <div
+                    class="progress-bar bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+                  >
+                    <div
+                      class="progress-fill bg-blue-500 h-2 rounded-full transition-all duration-300"
+                      [style.width.%]="readingProgress().percentage"
+                    ></div>
+                  </div>
+                  <div class="progress-stats flex justify-between">
+                    <span>{{ readingProgress().percentage.toFixed(0) }}%</span>
+                    <span
+                      >{{ readingProgress().estimatedTimeLeft }} min
+                      restantes</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Table of Contents (Desktop) -->
+              <div
+                *ngIf="
+                  config().showTableOfContents && tableOfContents().length > 0
+                "
+                class="table-of-contents hidden lg:block sticky top-8 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6"
+              >
+                <h3
+                  class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3"
+                >
+                  Índice del artículo
+                </h3>
+                <nav class="toc-nav">
+                  <ul class="toc-list space-y-1">
+                    <li
+                      *ngFor="
+                        let heading of tableOfContents();
+                        trackBy: trackByHeading
+                      "
+                      class="toc-item"
+                      [style.margin-left.rem]="(heading.level - 1) * 0.5"
+                    >
+                      <button
+                        type="button"
+                        (click)="scrollToHeading(heading.id)"
+                        class="toc-link w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        [class.toc-active]="
+                          uiState().activeHeading === heading.id
+                        "
+                      >
+                        {{ heading.text }}
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+
+              <!-- Tags -->
+              <div
+                *ngIf="currentPost()!.tags && currentPost()!.tags.length > 0"
+                class="article-tags sticky top-8 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700"
+              >
+                <h3
+                  class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3"
+                >
+                  Etiquetas
+                </h3>
+                <div class="tags-list flex flex-wrap gap-2">
+                  <button
+                    *ngFor="let tag of currentPost()!.tags"
+                    type="button"
+                    (click)="onTagClick({ post: currentPost()!, tag: tag })"
+                    class="tag-btn px-3 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    #{{ tag }}
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Author Bio (if enabled) -->
+          <section
+            *ngIf="config().showAuthorBio"
+            class="author-bio mt-12 p-6 bg-gray-100 dark:bg-gray-800 rounded-lg"
+          >
+            <div
+              class="author-content flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6"
+            >
+              <img
+                [src]="currentPost()!.author?.avatar || '/assets/images/default-avatar.jpg'"
+                [alt]="currentPost()!.author?.name || 'Autor'"
+                class="author-image w-20 h-20 rounded-full"
+              />
+              <div class="author-info flex-1">
+                <h3
+                  class="author-name text-xl font-bold text-gray-900 dark:text-gray-100 mb-2"
+                >
+                  {{ currentPost()!.author?.name || 'Autor desconocido' }}
+                </h3>
+                <p
+                  class="author-bio-text text-gray-700 dark:text-gray-300 mb-3"
+                >
+                  {{ currentPost()!.author?.bio || 'Sin biografía disponible' }}
+                </p>
+                <div class="author-social flex space-x-4" *ngIf="currentPost()!.author?.socialLinks">
+                  <a
+                    *ngIf="currentPost()!.author?.socialLinks?.website"
+                    [href]="currentPost()!.author!.socialLinks!.website!"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                  >
+                    <span class="sr-only">Sitio web</span>
+                    <svg
+                      class="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </a>
+                  <a
+                    *ngIf="currentPost()!.author?.socialLinks?.twitter"
+                    [href]="currentPost()!.author!.socialLinks!.twitter!"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                  >
+                    <span class="sr-only">Twitter</span>
+                    <svg
+                      class="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                  </a>
+                  <a
+                    *ngIf="currentPost()!.author?.socialLinks?.linkedin"
+                    [href]="currentPost()!.author!.socialLinks!.linkedin!"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-link text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                  >
+                    <span class="sr-only">LinkedIn</span>
+                    <svg
+                      class="h-5 w-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Article Navigation -->
+          <nav
+            class="article-navigation mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+          >
+            <div
+              class="nav-buttons flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+            >
+              <button
+                type="button"
+                (click)="goToPreviousPost()"
+                class="nav-btn prev-btn flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              >
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                <span>Artículo anterior</span>
+              </button>
+
+              <a
+                routerLink="/blog"
+                class="back-to-blog px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                Ver todos los artículos
+              </a>
+
+              <button
+                type="button"
+                (click)="goToNextPost()"
+                class="nav-btn next-btn flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+              >
+                <span>Siguiente artículo</span>
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </article>
+
+    <!-- Related Posts Section -->
+    <section
+      *ngIf="config().showRelatedPosts && relatedPosts().length > 0"
+      class="related-posts-section py-12 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+    >
+      <div class="container mx-auto px-4">
+        <div class="related-content max-w-6xl mx-auto">
+          <h2
+            class="section-title text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8"
+          >
+            Artículos relacionados
+          </h2>
+          <div
+            class="related-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            <app-blog-card
+              *ngFor="let post of relatedPosts(); trackBy: trackByRelatedPost"
+              [post]="post"
+              [config]="{ layout: 'grid' }"
+              (cardClick)="onRelatedPostClick($event)"
+              (categoryClick)="onCategoryClick($event)"
+              (tagClick)="onTagClick($event)"
+              class="related-card"
+            >
+            </app-blog-card>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Social Share Modal -->
+  <div
+    *ngIf="uiState().showShareModal"
+    class="share-modal fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    (click)="toggleShareModal()"
+  >
+    <div
+      class="share-modal-content bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-header flex items-center justify-between mb-6">
+        <h3
+          class="modal-title text-lg font-semibold text-gray-900 dark:text-gray-100"
+        >
+          Compartir artículo
+        </h3>
+        <button
+          type="button"
+          (click)="toggleShareModal()"
+          class="close-btn p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="share-options space-y-4">
+        <!-- Social Platforms -->
+        <div class="social-platforms grid grid-cols-2 gap-3">
+          <button
+            *ngFor="
+              let platform of socialShareConfig().platforms;
+              trackBy: trackBySocialPlatform
+            "
+            type="button"
+            (click)="shareOnPlatform(platform)"
+            class="platform-btn flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class]="platform.color + ' text-white'"
+          >
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <!-- Iconos dinámicos según la plataforma -->
+            </svg>
+            <span class="text-sm font-medium">{{ platform.name }}</span>
+          </button>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="additional-options space-y-2">
+          <button
+            type="button"
+            (click)="copyLinkToClipboard()"
+            class="option-btn w-full flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <svg
+              class="h-5 w-5 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+            <span class="text-sm text-gray-700 dark:text-gray-300"
+              >Copiar enlace</span
+            >
+          </button>
+
+          <button
+            type="button"
+            (click)="shareViaEmail()"
+            class="option-btn w-full flex items-center space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <svg
+              class="h-5 w-5 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+            <span class="text-sm text-gray-700 dark:text-gray-300"
+              >Enviar por email</span
+            >
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table of Contents Modal (Mobile) -->
+  <div
+    *ngIf="uiState().showTableOfContents"
+    class="toc-modal fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-start justify-center p-4 pt-20"
+    (click)="toggleTableOfContents()"
+  >
+    <div
+      class="toc-modal-content bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-2xl max-h-96 overflow-y-auto"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-header flex items-center justify-between mb-4">
+        <h3
+          class="modal-title text-lg font-semibold text-gray-900 dark:text-gray-100"
+        >
+          Índice del artículo
+        </h3>
+        <button
+          type="button"
+          (click)="toggleTableOfContents()"
+          class="close-btn p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 rounded"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <nav class="toc-nav">
+        <ul class="toc-list space-y-2">
+          <li
+            *ngFor="let heading of tableOfContents(); trackBy: trackByHeading"
+            class="toc-item"
+            [style.margin-left.rem]="(heading.level - 1) * 0.5"
+          >
+            <button
+              type="button"
+              (click)="scrollToHeading(heading.id)"
+              class="toc-link w-full text-left text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.toc-active]="uiState().activeHeading === heading.id"
+            >
+              {{ heading.text }}
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

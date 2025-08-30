@@ -1,0 +1,177 @@
+@import "ngx-toastr/toastr";
+/* @import "~animate.css/animate.min.css"; */
+
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "~quill/dist/quill.bubble.css";
+@import "~quill/dist/quill.snow.css";
+
+/* Añadir importaciones de Swiper al inicio del archivo */
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+@import "swiper/css/effect-fade";
+
+/* Estilos para asegurar ancho completo */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.w-screen {
+  width: 100vw;
+  max-width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+}
+
+body {
+  /* background-color: #c6d8e7; */
+  background-color: #fff;
+}
+
+/* Variables globales para colores configurables */
+:root {
+  --color-primario: #3b82f6;
+  --color-primario-rgb: 59, 130, 246;
+  --color-secundario: #10b981;
+  --color-secundario-rgb: 16, 185, 129;
+  --color-fondo: #f3f4f6;
+  --color-texto: #1f2937;
+  --color-enlaces: #2563eb;
+}
+
+/* Clases para usar colores dinámicos */
+.color-primario {
+  color: var(--color-primario);
+}
+
+.bg-primario {
+  background-color: var(--color-primario);
+}
+
+.color-secundario {
+  color: var(--color-secundario);
+}
+
+.bg-secundario {
+  background-color: var(--color-secundario);
+}
+
+.color-texto {
+  color: var(--color-texto);
+}
+
+/* Transiciones suaves para enlaces y botones */
+a,
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Efecto hover para enlaces con el color primario */
+a:hover {
+  color: var(--color-primario);
+}
+
+@layer components {
+  .boton-naranja {
+    @apply text-naranja bg-naranja_claro hover:bg-naranja hover:text-white focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 mr-2 mb-2 focus:outline-none;
+  }
+
+  .boton-verde {
+    @apply text-verde bg-verde_claro hover:bg-verde hover:text-white focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 mr-2 mb-2 focus:outline-none;
+  }
+
+  .boton-azul {
+    @apply text-azul bg-azul_claro hover:bg-azul hover:text-white focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 mr-2 mb-2 focus:outline-none;
+  }
+
+  .boton-rojo {
+    @apply text-rojo bg-rojo_claro hover:bg-rojo hover:text-white focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-2.5 mr-2 mb-2 focus:outline-none;
+  }
+
+  .titulo {
+    @apply text-2xl font-bold;
+  }
+
+  .subtitulo {
+    @apply text-xl font-bold;
+  }
+
+  .texto {
+    @apply text-base font-normal;
+  }
+
+  .titulo-azul {
+    @apply text-2xl font-bold text-azul;
+  }
+
+  .subtitulo-azul {
+    @apply text-xl font-bold text-azul;
+  }
+
+  .texto-azul {
+    @apply text-base font-normal text-azul;
+  }
+
+  .titulo-naranja {
+    @apply text-2xl font-bold text-naranja;
+  }
+
+  .subtitulo-naranja {
+    @apply text-xl font-bold text-naranja;
+  }
+
+  .texto-naranja {
+    @apply text-base font-normal text-naranja;
+  }
+
+  .titulo-gris {
+    @apply text-2xl font-bold text-gray-400;
+  }
+
+  .subtitulo-gris {
+    @apply text-xl font-bold text-gray-400;
+  }
+
+  .texto-gris {
+    @apply text-base font-normal text-gray-400;
+  }
+
+  .titulo-rojo {
+    @apply text-2xl font-bold text-rojo;
+  }
+
+  .subtitulo-rojo {
+    @apply text-xl font-bold text-rojo;
+  }
+
+  .texto-rojo {
+    @apply text-base font-normal text-rojo;
+  }
+
+  .alerta-rojo {
+    @apply p-4 mb-4 text-sm text-rojo rounded-lg bg-red-50;
+  }
+}
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}

@@ -1,0 +1,609 @@
+<!-- ===== BLOG SEARCH COMPONENT ===== -->
+<div class="blog-search-container" [class.search-active]="isSearchActive()">
+  <!-- Barra de búsqueda principal -->
+  <div class="search-main-wrapper relative">
+    <div class="search-input-container">
+      <!-- Input de búsqueda -->
+      <div class="relative">
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+          <svg
+            class="h-5 w-5 text-gray-400 dark:text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+
+        <input
+          #searchInput
+          type="text"
+          [formControl]="searchControl"
+          [placeholder]="searchConfig().placeholder"
+          class="search-input w-full pl-10 pr-20 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-base placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
+          [class.search-loading]="isLoading()"
+          (focus)="updateSearchState({ showSuggestions: true })"
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+        <!-- Botones de acción en el input -->
+        <div
+          class="absolute inset-y-0 right-0 flex items-center pr-3 space-x-1"
+        >
+          <!-- Loading spinner -->
+          <div
+            *ngIf="isLoading()"
+            class="loading-spinner h-4 w-4 text-gray-400 dark:text-gray-500"
+          >
+            <svg
+              class="animate-spin"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Botón de limpiar -->
+          <button
+            *ngIf="currentQuery() && !isLoading()"
+            type="button"
+            (click)="clearSearch()"
+            class="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            [attr.aria-label]="'Limpiar búsqueda'"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <!-- Botón de filtros -->
+          <button
+            *ngIf="searchConfig().showAdvancedFilters"
+            type="button"
+            (click)="toggleFilters()"
+            class="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            [class.text-blue-600]="
+              searchState().showFilters || hasActiveFilters()
+            "
+            [attr.aria-label]="'Filtros de búsqueda'"
+            [attr.aria-expanded]="searchState().showFilters"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+              />
+            </svg>
+          </button>
+
+          <!-- Botón de historial -->
+          <button
+            *ngIf="searchConfig().enableHistory"
+            type="button"
+            (click)="toggleHistory()"
+            class="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            [class.text-blue-600]="searchState().showHistory"
+            [attr.aria-label]="'Historial de búsqueda'"
+            [attr.aria-expanded]="searchState().showHistory"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropdown de sugerencias y resultados -->
+    <div
+      #searchDropdown
+      *ngIf="showSearchResults()"
+      class="search-dropdown absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
+      role="listbox"
+    >
+      <!-- Sugerencias de auto-complete -->
+      <div
+        *ngIf="
+          searchState().showSuggestions && searchState().suggestions.length > 0
+        "
+        class="suggestions-section border-b border-gray-100 dark:border-gray-700"
+      >
+        <div
+          class="p-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"
+        >
+          Sugerencias
+        </div>
+        <div class="suggestions-list">
+          <button
+            *ngFor="
+              let suggestion of searchState().suggestions;
+              trackBy: trackBySuggestion
+            "
+            type="button"
+            (click)="selectSuggestion(suggestion)"
+            class="suggestion-item w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center space-x-3 transition-colors focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700"
+            [attr.aria-label]="'Seleccionar ' + suggestion.text"
+          >
+            <!-- Icono según tipo -->
+            <div class="suggestion-icon flex-shrink-0">
+              <svg
+                *ngIf="suggestion.type === 'post'"
+                class="h-4 w-4 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              <svg
+                *ngIf="suggestion.type === 'category'"
+                class="h-4 w-4 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                />
+              </svg>
+              <svg
+                *ngIf="suggestion.type === 'tag'"
+                class="h-4 w-4 text-orange-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                />
+              </svg>
+              <svg
+                *ngIf="suggestion.type === 'author'"
+                class="h-4 w-4 text-purple-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+
+            <!-- Texto de la sugerencia -->
+            <div class="suggestion-content flex-1 min-w-0">
+              <div
+                class="suggestion-text text-sm text-gray-900 dark:text-gray-100 truncate"
+              >
+                {{ suggestion.text }}
+              </div>
+              <div
+                class="suggestion-type text-xs text-gray-500 dark:text-gray-400 capitalize"
+              >
+                {{ suggestion.type }}
+              </div>
+            </div>
+
+            <!-- Popularidad -->
+            <div
+              *ngIf="suggestion.popularity"
+              class="suggestion-popularity text-xs text-gray-400 dark:text-gray-500"
+            >
+              {{ suggestion.popularity }}
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Historial de búsquedas -->
+      <div
+        *ngIf="searchState().showHistory && searchState().history.length > 0"
+        class="history-section"
+      >
+        <div
+          class="p-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide flex items-center justify-between"
+        >
+          <span>Búsquedas recientes</span>
+          <button
+            type="button"
+            (click)="clearSearchHistory()"
+            class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+            [attr.aria-label]="'Limpiar historial'"
+          >
+            <svg
+              class="h-3 w-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="history-list">
+          <button
+            *ngFor="let item of searchState().history; trackBy: trackByHistory"
+            type="button"
+            (click)="selectFromHistory(item)"
+            class="history-item w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-between group transition-colors focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700"
+          >
+            <div class="history-content flex-1 min-w-0">
+              <div
+                class="history-query text-sm text-gray-900 dark:text-gray-100 truncate"
+              >
+                {{ item.query }}
+              </div>
+              <div
+                class="history-meta text-xs text-gray-500 dark:text-gray-400"
+              >
+                {{ formatDate(item.timestamp) }} •
+                {{ item.resultsCount }} resultados
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="removeFromHistory(item.id); $event.stopPropagation()"
+              class="history-remove opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-all focus:opacity-100"
+              [attr.aria-label]="'Eliminar del historial'"
+            >
+              <svg
+                class="h-3 w-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <div
+        *ngIf="
+          searchState().showSuggestions &&
+          searchState().suggestions.length === 0 &&
+          currentQuery().length >= searchConfig().minQueryLength
+        "
+        class="empty-state p-4 text-center text-gray-500 dark:text-gray-400"
+      >
+        <svg
+          class="mx-auto h-8 w-8 mb-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <p class="text-sm">
+          No se encontraron sugerencias para "{{ currentQuery() }}"
+        </p>
+      </div>
+
+      <div
+        *ngIf="searchState().showHistory && searchState().history.length === 0"
+        class="empty-state p-4 text-center text-gray-500 dark:text-gray-400"
+      >
+        <svg
+          class="mx-auto h-8 w-8 mb-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <p class="text-sm">No hay búsquedas recientes</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de filtros avanzados -->
+  <div
+    *ngIf="searchState().showFilters"
+    class="filters-panel mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
+  >
+    <!-- Encabezado de filtros -->
+    <div class="filters-header flex items-center justify-between mb-4">
+      <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
+        Filtros de búsqueda
+      </h3>
+      <button
+        *ngIf="hasActiveFilters()"
+        type="button"
+        (click)="clearAllFilters()"
+        class="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors"
+      >
+        Limpiar filtros
+      </button>
+    </div>
+
+    <!-- Filtros principales -->
+    <div
+      class="filters-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
+      <!-- Filtro de categorías -->
+      <div class="filter-group">
+        <label
+          class="filter-label block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Categorías
+        </label>
+        <div class="filter-options space-y-2 max-h-32 overflow-y-auto">
+          <label
+            *ngFor="let category of categories(); trackBy: trackByCategory"
+            class="filter-option flex items-center space-x-2 cursor-pointer"
+          >
+            <input
+              type="checkbox"
+              [checked]="currentFilters().categories.includes(category.id)"
+              (change)="onCategoryCheckboxChange($event, category.id)"
+              class="filter-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+            />
+            <span
+              class="filter-option-text text-sm text-gray-700 dark:text-gray-300 truncate"
+            >
+              {{ category.name }}
+            </span>
+            <span
+              class="filter-option-count text-xs text-gray-500 dark:text-gray-400"
+            >
+              ({{ category.postsCount }})
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Filtro de tags -->
+      <div class="filter-group" *ngIf="popularTags().length > 0">
+        <label
+          class="filter-label block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Tags populares
+        </label>
+        <div class="filter-tags flex flex-wrap gap-2">
+          <button
+            *ngFor="let tag of popularTags().slice(0, 8)"
+            type="button"
+            (click)="
+              currentFilters().tags.includes(tag)
+                ? removeTagFilter(tag)
+                : addTagFilter(tag)
+            "
+            class="tag-filter px-2 py-1 text-xs rounded-full border transition-all hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.tag-active]="currentFilters().tags.includes(tag)"
+            [class.tag-inactive]="!currentFilters().tags.includes(tag)"
+          >
+            {{ tag }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtro de ordenamiento -->
+      <div class="filter-group">
+        <label
+          class="filter-label block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Ordenar por
+        </label>
+        <select
+          [value]="currentFilters().sortBy"
+          (change)="onSortChange($event)"
+          class="filter-select w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:border-blue-500 focus:ring-blue-500 dark:text-gray-300"
+        >
+          <option value="newest">Más recientes</option>
+          <option value="oldest">Más antiguos</option>
+          <option value="popular">Más populares</option>
+          <option value="mostViewed">Más vistos</option>
+          <option value="mostLiked">Más valorados</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Filtros de fecha (opcional) -->
+    <div class="date-filters mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="filter-group">
+        <label
+          class="filter-label block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Desde
+        </label>
+        <input
+          type="date"
+          [value]="getDateFromValue()"
+          (change)="onDateFromChange($event)"
+          class="filter-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:border-blue-500 focus:ring-blue-500 dark:text-gray-300"
+        />
+      </div>
+      <div class="filter-group">
+        <label
+          class="filter-label block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Hasta
+        </label>
+        <input
+          type="date"
+          [value]="getDateToValue()"
+          (change)="onDateToChange($event)"
+          class="filter-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:border-blue-500 focus:ring-blue-500 dark:text-gray-300"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicadores de filtros activos -->
+  <div
+    *ngIf="hasActiveFilters() && !searchState().showFilters"
+    class="active-filters mt-3 flex flex-wrap items-center gap-2"
+  >
+    <span class="text-xs text-gray-500 dark:text-gray-400"
+      >Filtros activos:</span
+    >
+
+    <!-- Categorías activas -->
+    <span
+      *ngFor="let categoryId of currentFilters().categories"
+      class="active-filter px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full flex items-center space-x-1"
+    >
+      <span>{{ getCategoryById(categoryId)?.name || categoryId }}</span>
+      <button
+        type="button"
+        (click)="removeCategoryFilter(categoryId)"
+        class="ml-1 text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100"
+      >
+        <svg
+          class="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </span>
+
+    <!-- Tags activos -->
+    <span
+      *ngFor="let tag of currentFilters().tags"
+      class="active-filter px-2 py-1 text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-full flex items-center space-x-1"
+    >
+      <span>{{ tag }}</span>
+      <button
+        type="button"
+        (click)="removeTagFilter(tag)"
+        class="ml-1 text-orange-600 hover:text-orange-800 dark:text-orange-300 dark:hover:text-orange-100"
+      >
+        <svg
+          class="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </span>
+  </div>
+
+  <!-- Estados de error -->
+  <div
+    *ngIf="errors().search || errors().suggestions || errors().filters"
+    class="error-messages mt-3 space-y-2"
+  >
+    <div
+      *ngIf="errors().search"
+      class="error-message p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md flex items-center space-x-2"
+    >
+      <svg
+        class="h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span class="text-sm text-red-700 dark:text-red-300">
+        {{ errors().search }}
+      </span>
+    </div>
+  </div>
+</div>

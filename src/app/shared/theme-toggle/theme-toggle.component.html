@@ -1,0 +1,534 @@
+<!-- Theme Toggle Container -->
+<div [class]="containerClasses()">
+  <!-- Button Variant -->
+  @if (variant === 'button' || variant === 'mini') {
+  <button
+    type="button"
+    (click)="onToggleTheme()"
+    [disabled]="isChanging()"
+    class="theme-toggle-btn relative inline-flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    [title]="currentThemeOption().description"
+    [attr.aria-label]="'Cambiar tema: ' + currentThemeOption().description"
+  >
+    <!-- Icon -->
+    <span
+      class="theme-icon flex-shrink-0 transition-transform duration-200"
+      [class.animate-spin]="isChanging()"
+      [innerHTML]="getButtonIcon()"
+    >
+    </span>
+
+    <!-- Label -->
+    @if (getButtonText()) {
+    <span class="theme-label">{{ getButtonText() }}</span>
+    }
+
+    <!-- Loading Overlay -->
+    @if (isChanging()) {
+    <div
+      class="absolute inset-0 bg-white/50 dark:bg-gray-800/50 rounded-lg flex items-center justify-center"
+    >
+      <div
+        class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
+      ></div>
+    </div>
+    }
+  </button>
+  }
+
+  <!-- Dropdown Variant -->
+  @else if (variant === 'dropdown') {
+  <div class="relative">
+    <!-- Dropdown Trigger -->
+    <button
+      type="button"
+      (click)="onToggleTheme()"
+      [disabled]="isChanging()"
+      class="theme-toggle-btn inline-flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      [attr.aria-expanded]="isOpen()"
+      [attr.aria-haspopup]="true"
+      aria-label="Configuración de tema"
+    >
+      <!-- Icon -->
+      <span
+        class="theme-icon flex-shrink-0 transition-transform duration-200"
+        [class.animate-spin]="isChanging()"
+        [innerHTML]="getButtonIcon()"
+      >
+      </span>
+
+      <!-- Label -->
+      @if (showLabel) {
+      <span class="theme-label">{{ getButtonText() }}</span>
+      }
+
+      <!-- Dropdown Arrow -->
+      <svg
+        class="dropdown-arrow w-4 h-4 transition-transform duration-200"
+        [class.rotate-180]="isOpen()"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </button>
+
+    <!-- Dropdown Content -->
+    @if (isOpen()) {
+    <div
+      #dropdownContent
+      class="dropdown-content absolute mt-2 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[200px]"
+      [class.dropdown-left]="position === 'left'"
+      [class.dropdown-right]="position === 'right'"
+      [class.dropdown-center]="position === 'center'"
+    >
+      <!-- Theme Mode Options -->
+      <div class="theme-modes px-3 py-2">
+        <div
+          class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2"
+        >
+          Modo de tema
+        </div>
+
+        @for (option of themeOptions; track trackByValue($index, option)) {
+        <button
+          type="button"
+          (click)="onSelectThemeMode(option.value)"
+          [class.active]="isThemeModeActive(option.value)"
+          class="theme-option w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
+          <span
+            class="option-icon w-4 h-4 flex-shrink-0"
+            [innerHTML]="getThemeIcon(option.icon)"
+          >
+          </span>
+
+          <div class="option-content flex-1 text-left">
+            <div class="option-label font-medium">{{ option.label }}</div>
+            @if (option.value === 'auto') {
+            <div
+              class="option-description text-xs text-gray-500 dark:text-gray-400"
+            >
+              Actualmente:
+              {{ effectiveTheme() === "dark" ? "Oscuro" : "Claro" }}
+            </div>
+            }
+          </div>
+
+          @if (isThemeModeActive(option.value)) {
+          <svg
+            class="w-4 h-4 text-blue-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          }
+        </button>
+        }
+      </div>
+
+      <!-- Color Schemes -->
+      @if (showColorSchemes) {
+      <div
+        class="color-schemes px-3 py-2 border-t border-gray-200 dark:border-gray-700"
+      >
+        <div
+          class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2"
+        >
+          Esquema de color
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          @for (scheme of colorSchemes(); track trackByValue($index, scheme)) {
+          <button
+            type="button"
+            (click)="onSelectColorScheme(scheme.value)"
+            [class.active]="isColorSchemeActive(scheme.value)"
+            class="color-scheme-option flex flex-col items-center gap-1 p-2 text-xs rounded-md transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            [title]="scheme.label"
+          >
+            <div
+              class="color-preview w-6 h-6 rounded-full border-2"
+              [style.background-color]="scheme.color"
+              [class.ring-2]="isColorSchemeActive(scheme.value)"
+              [class.ring-blue-500]="isColorSchemeActive(scheme.value)"
+            ></div>
+
+            <span class="color-label">{{ scheme.label }}</span>
+          </button>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Advanced Options -->
+      @if (showAdvancedOptions) {
+      <div
+        class="advanced-options px-3 py-2 border-t border-gray-200 dark:border-gray-700"
+      >
+        <div
+          class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2"
+        >
+          Opciones avanzadas
+        </div>
+
+        <!-- Font Size -->
+        <div class="option-group mb-3">
+          <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block"
+            >Tamaño de fuente</label
+          >
+          <div class="flex gap-1">
+            <button
+              type="button"
+              (click)="onChangeFontSize('small')"
+              [class.active]="themeConfig().fontSize === 'small'"
+              class="font-size-btn px-2 py-1 text-xs rounded transition-colors duration-200"
+            >
+              S
+            </button>
+            <button
+              type="button"
+              (click)="onChangeFontSize('medium')"
+              [class.active]="themeConfig().fontSize === 'medium'"
+              class="font-size-btn px-2 py-1 text-xs rounded transition-colors duration-200"
+            >
+              M
+            </button>
+            <button
+              type="button"
+              (click)="onChangeFontSize('large')"
+              [class.active]="themeConfig().fontSize === 'large'"
+              class="font-size-btn px-2 py-1 text-xs rounded transition-colors duration-200"
+            >
+              L
+            </button>
+          </div>
+        </div>
+
+        <!-- Toggle Options -->
+        <div class="toggle-options space-y-2">
+          <label
+            class="toggle-option flex items-center justify-between cursor-pointer"
+          >
+            <span class="text-sm">Modo compacto</span>
+            <input
+              type="checkbox"
+              [checked]="themeConfig().compactMode"
+              (change)="onToggleCompactMode()"
+              class="toggle-input sr-only"
+            />
+            <div class="toggle-switch"></div>
+          </label>
+
+          <label
+            class="toggle-option flex items-center justify-between cursor-pointer"
+          >
+            <span class="text-sm">Alto contraste</span>
+            <input
+              type="checkbox"
+              [checked]="themeConfig().highContrast"
+              (change)="onToggleHighContrast()"
+              class="toggle-input sr-only"
+            />
+            <div class="toggle-switch"></div>
+          </label>
+
+          <label
+            class="toggle-option flex items-center justify-between cursor-pointer"
+          >
+            <span class="text-sm">Reducir animaciones</span>
+            <input
+              type="checkbox"
+              [checked]="themeConfig().reducedMotion"
+              (change)="onToggleReducedMotion()"
+              class="toggle-input sr-only"
+            />
+            <div class="toggle-switch"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Reset Button -->
+      <div
+        class="reset-section px-3 py-2 border-t border-gray-200 dark:border-gray-700"
+      >
+        <button
+          type="button"
+          (click)="onResetToDefault()"
+          class="reset-btn w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 rounded-md transition-colors duration-200"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          Restaurar por defecto
+        </button>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Panel Variant -->
+  @else if (variant === 'panel') {
+  <div
+    class="theme-panel bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm"
+  >
+    <!-- Panel Header -->
+    <div class="panel-header flex items-center justify-between mb-4">
+      <h3
+        class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
+      >
+        <span class="panel-icon w-5 h-5" [innerHTML]="getThemeIcon('palette')">
+        </span>
+        Configuración de tema
+      </h3>
+
+      @if (isChanging()) {
+      <div
+        class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"
+      ></div>
+      }
+    </div>
+
+    <!-- Theme Mode Selection -->
+    <div class="theme-modes mb-6">
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+      >
+        Modo de tema
+      </label>
+
+      <div class="grid grid-cols-3 gap-2">
+        @for (option of themeOptions; track trackByValue($index, option)) {
+        <button
+          type="button"
+          (click)="onSelectThemeMode(option.value)"
+          [class.active]="isThemeModeActive(option.value)"
+          class="theme-mode-card flex flex-col items-center gap-2 p-3 border-2 rounded-lg transition-all duration-200"
+        >
+          <span
+            class="mode-icon w-6 h-6"
+            [innerHTML]="getThemeIcon(option.icon)"
+          >
+          </span>
+
+          <div class="mode-info text-center">
+            <div class="mode-label text-sm font-medium">{{ option.label }}</div>
+            @if (option.value === 'auto') {
+            <div
+              class="mode-description text-xs text-gray-500 dark:text-gray-400"
+            >
+              {{ effectiveTheme() === "dark" ? "Oscuro" : "Claro" }}
+            </div>
+            }
+          </div>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Color Schemes -->
+    <div class="color-schemes mb-6">
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+      >
+        Esquema de color
+      </label>
+
+      <div class="grid grid-cols-6 gap-2">
+        @for (scheme of colorSchemes(); track trackByValue($index, scheme)) {
+        <button
+          type="button"
+          (click)="onSelectColorScheme(scheme.value)"
+          [class.active]="isColorSchemeActive(scheme.value)"
+          class="color-scheme-card flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-200"
+          [title]="scheme.label"
+        >
+          <div
+            class="color-swatch w-8 h-8 rounded-full border-2"
+            [style.background-color]="scheme.color"
+            [class.ring-2]="isColorSchemeActive(scheme.value)"
+            [class.ring-blue-500]="isColorSchemeActive(scheme.value)"
+          ></div>
+
+          <span class="color-name text-xs">{{ scheme.label }}</span>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Font Options -->
+    <div class="font-options mb-6">
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+      >
+        Tipografía
+      </label>
+
+      <div class="space-y-3">
+        <!-- Font Size -->
+        <div class="font-size-group">
+          <label class="text-xs text-gray-600 dark:text-gray-400 mb-2 block"
+            >Tamaño</label
+          >
+          <div class="flex gap-2">
+            <button
+              type="button"
+              (click)="onChangeFontSize('small')"
+              [class.active]="themeConfig().fontSize === 'small'"
+              class="font-size-option flex-1 px-3 py-2 text-sm rounded-md transition-all duration-200"
+            >
+              Pequeño
+            </button>
+            <button
+              type="button"
+              (click)="onChangeFontSize('medium')"
+              [class.active]="themeConfig().fontSize === 'medium'"
+              class="font-size-option flex-1 px-3 py-2 text-sm rounded-md transition-all duration-200"
+            >
+              Medio
+            </button>
+            <button
+              type="button"
+              (click)="onChangeFontSize('large')"
+              [class.active]="themeConfig().fontSize === 'large'"
+              class="font-size-option flex-1 px-3 py-2 text-sm rounded-md transition-all duration-200"
+            >
+              Grande
+            </button>
+          </div>
+        </div>
+
+        <!-- Font Family -->
+        <div class="font-family-group">
+          <label class="text-xs text-gray-600 dark:text-gray-400 mb-2 block"
+            >Familia</label
+          >
+          <div class="grid grid-cols-3 gap-2">
+            @for (font of fontOptions(); track trackByValue($index, font)) {
+            <button
+              type="button"
+              (click)="onChangeFontFamily($any(font.value))"
+              [class.active]="themeConfig().fontFamily === font.value"
+              class="font-family-option px-2 py-1 text-xs rounded-md transition-all duration-200"
+              [title]="font.preview"
+            >
+              {{ font.label }}
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toggle Options -->
+    <div class="toggle-options mb-6">
+      <label
+        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3"
+      >
+        Preferencias
+      </label>
+
+      <div class="space-y-3">
+        <label
+          class="preference-toggle flex items-center justify-between cursor-pointer p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="preference-info">
+            <div class="preference-label text-sm font-medium">
+              Modo compacto
+            </div>
+            <div
+              class="preference-description text-xs text-gray-500 dark:text-gray-400"
+            >
+              Reduce el espaciado para más contenido
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            [checked]="themeConfig().compactMode"
+            (change)="onToggleCompactMode()"
+            class="preference-input sr-only"
+          />
+          <div class="preference-switch"></div>
+        </label>
+
+        <label
+          class="preference-toggle flex items-center justify-between cursor-pointer p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="preference-info">
+            <div class="preference-label text-sm font-medium">
+              Alto contraste
+            </div>
+            <div
+              class="preference-description text-xs text-gray-500 dark:text-gray-400"
+            >
+              Mejora la legibilidad
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            [checked]="themeConfig().highContrast"
+            (change)="onToggleHighContrast()"
+            class="preference-input sr-only"
+          />
+          <div class="preference-switch"></div>
+        </label>
+
+        <label
+          class="preference-toggle flex items-center justify-between cursor-pointer p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="preference-info">
+            <div class="preference-label text-sm font-medium">
+              Reducir animaciones
+            </div>
+            <div
+              class="preference-description text-xs text-gray-500 dark:text-gray-400"
+            >
+              Desactiva transiciones y efectos
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            [checked]="themeConfig().reducedMotion"
+            (change)="onToggleReducedMotion()"
+            class="preference-input sr-only"
+          />
+          <div class="preference-switch"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Panel Actions -->
+    <div class="panel-actions flex gap-2">
+      <button
+        type="button"
+        (click)="onResetToDefault()"
+        class="reset-action flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        Restaurar
+      </button>
+    </div>
+  </div>
+  }
+</div>

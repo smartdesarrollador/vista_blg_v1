@@ -1,0 +1,765 @@
+<!-- Comments Section Container -->
+<section
+  class="blog-comments"
+  #commentsContainer
+  [attr.aria-label]="'Comentarios del artículo'"
+>
+  <!-- Comments Header -->
+  <div class="comments-header mb-8">
+    @if (showTitle) {
+    <h3
+      class="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center"
+    >
+      <svg
+        class="w-6 h-6 mr-2 text-blue-600 dark:text-blue-400"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      Comentarios
+      <span class="ml-2 text-lg font-medium text-gray-500 dark:text-gray-400">
+        ({{ commentsStats().approved }})
+      </span>
+    </h3>
+    }
+
+    <!-- Comments Stats -->
+    <div
+      class="comments-stats flex flex-wrap items-center gap-4 mb-6 text-sm text-gray-600 dark:text-gray-400"
+    >
+      <span class="flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        {{ commentsStats().approved }} aprobados
+      </span>
+
+      @if (commentsStats().pending > 0) {
+      <span class="flex items-center text-yellow-600 dark:text-yellow-400">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        {{ commentsStats().pending }} pendientes
+      </span>
+      } @if (commentsStats().replies > 0) {
+      <span class="flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        {{ commentsStats().replies }} respuestas
+      </span>
+      }
+    </div>
+
+    <!-- Sort Controls -->
+    <div
+      class="comments-controls flex flex-wrap items-center justify-between gap-4 mb-6"
+    >
+      <div class="flex items-center gap-2">
+        <label
+          for="sort-comments"
+          class="text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          Ordenar por:
+        </label>
+        <select
+          id="sort-comments"
+          [value]="sortBy()"
+          (change)="onChangeSortBy($any($event.target).value)"
+          class="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      @if (allowComments) {
+      <button
+        (click)="onReplyToComment({ id: '', parentId: null } as any)"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        Escribir comentario
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- New Comment Form -->
+  @if (formState().isVisible && allowComments) {
+  <div
+    class="new-comment-form bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8 shadow-sm"
+  >
+    <div class="mb-4">
+      <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+        @if (formState().parentId) { Responder comentario } @else { Nuevo
+        comentario }
+      </h4>
+      @if (formState().parentId) {
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        Tu respuesta se publicará como respuesta al comentario seleccionado.
+      </p>
+      }
+    </div>
+
+    <form
+      [formGroup]="commentForm"
+      (ngSubmit)="onSubmitComment()"
+      class="space-y-4"
+    >
+      <!-- Content Textarea -->
+      <div>
+        <label
+          for="comment-content"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Comentario *
+        </label>
+        <textarea
+          id="comment-content"
+          formControlName="content"
+          rows="4"
+          placeholder="Escribe tu comentario aquí..."
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"
+          [class.border-red-500]="hasError('content')"
+        >
+        </textarea>
+        @if (hasError('content')) {
+        <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getErrorMessage("content") }}
+        </p>
+        }
+        <div
+          class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex justify-between"
+        >
+          <span>Mínimo 10 caracteres</span>
+          <span>{{ commentForm.get("content")?.value?.length || 0 }}/1000</span>
+        </div>
+      </div>
+
+      <!-- Author Information Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Author Name -->
+        <div>
+          <label
+            for="author-name"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
+            Nombre *
+          </label>
+          <input
+            id="author-name"
+            type="text"
+            formControlName="authorName"
+            placeholder="Tu nombre"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [class.border-red-500]="hasError('authorName')"
+          />
+          @if (hasError('authorName')) {
+          <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getErrorMessage("authorName") }}
+          </p>
+          }
+        </div>
+
+        <!-- Author Email -->
+        <div>
+          <label
+            for="author-email"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
+            Email *
+          </label>
+          <input
+            id="author-email"
+            type="email"
+            formControlName="authorEmail"
+            placeholder="tu@email.com"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            [class.border-red-500]="hasError('authorEmail')"
+          />
+          @if (hasError('authorEmail')) {
+          <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ getErrorMessage("authorEmail") }}
+          </p>
+          }
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            No se mostrará públicamente
+          </p>
+        </div>
+      </div>
+
+      <!-- Optional Website -->
+      <div>
+        <label
+          for="author-website"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          Sitio web (opcional)
+        </label>
+        <input
+          id="author-website"
+          type="url"
+          formControlName="authorWebsite"
+          placeholder="https://tusitio.com"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [class.border-red-500]="hasError('authorWebsite')"
+        />
+        @if (hasError('authorWebsite')) {
+        <p class="mt-1 text-sm text-red-600 dark:text-red-400">
+          {{ getErrorMessage("authorWebsite") }}
+        </p>
+        }
+      </div>
+
+      <!-- Anonymous Checkbox -->
+      <div class="flex items-center">
+        <input
+          id="is-anonymous"
+          type="checkbox"
+          formControlName="isAnonymous"
+          class="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
+        />
+        <label
+          for="is-anonymous"
+          class="ml-2 text-sm text-gray-700 dark:text-gray-300"
+        >
+          Comentar como anónimo
+        </label>
+      </div>
+
+      <!-- Form Actions -->
+      <div
+        class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 dark:border-gray-700"
+      >
+        <button
+          type="submit"
+          [disabled]="commentForm.invalid || submitting()"
+          class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          @if (submitting()) {
+          <svg
+            class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Enviando... } @else {
+          <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          Publicar comentario }
+        </button>
+
+        <button
+          type="button"
+          (click)="onCancelComment()"
+          class="inline-flex items-center justify-center px-6 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+  }
+
+  <!-- Error Message -->
+  @if (error()) {
+  <div
+    class="error-message bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6"
+  >
+    <div class="flex items-center">
+      <svg
+        class="w-5 h-5 text-red-600 dark:text-red-400 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <p class="text-sm font-medium text-red-800 dark:text-red-200">
+        {{ error() }}
+      </p>
+    </div>
+  </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-state space-y-6">
+    @for (item of [1,2,3]; track item) {
+    <div class="animate-pulse">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"
+      >
+        <div class="flex space-x-4">
+          <div
+            class="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full"
+          ></div>
+          <div class="flex-1 space-y-2">
+            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/4"></div>
+            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/6"></div>
+            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
+            <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Comments List -->
+  @else {
+  <div class="comments-list space-y-6">
+    @if (commentTree().length === 0) {
+    <!-- Empty State -->
+    <div class="empty-state text-center py-12">
+      <svg
+        class="w-16 h-16 mx-auto text-gray-400 dark:text-gray-500 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+        ></path>
+      </svg>
+      <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        No hay comentarios aún
+      </h4>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        Sé el primero en comentar sobre este artículo.
+      </p>
+      @if (allowComments) {
+      <button
+        (click)="onReplyToComment({ id: '', parentId: null } as any)"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+      >
+        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        Escribir el primer comentario
+      </button>
+      }
+    </div>
+    } @else {
+    <!-- Recursive Comments -->
+    @for (comment of commentTree(); track trackByCommentId($index, comment)) {
+    <div
+      [id]="'comment-' + comment.id"
+      class="comment-item"
+      [class.comment-pending]="comment.status === 'pending'"
+      [class.comment-thread]="comment.level > 0"
+      [style.margin-left.px]="comment.level * 20"
+    >
+      <!-- Comment Card -->
+      <div
+        class="comment-card bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200 hover:shadow-sm"
+      >
+        <!-- Comment Header -->
+        <div class="comment-header flex items-start justify-between mb-4">
+          <div class="flex items-center space-x-3">
+            <!-- Avatar -->
+            <div class="flex-shrink-0">
+              @if (comment.author.avatar) {
+              <img
+                [src]="comment.author.avatar"
+                [alt]="comment.author.name"
+                class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700"
+              />
+              } @else {
+              <div
+                class="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center"
+              >
+                <svg
+                  class="w-6 h-6 text-gray-600 dark:text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+              }
+            </div>
+
+            <!-- Author Info -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                @if (comment.author.website) {
+                <a
+                  [href]="comment.author.website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ comment.author.name }}
+                </a>
+                } @else {
+                <span class="font-medium text-gray-900 dark:text-white">
+                  {{ comment.author.name }}
+                </span>
+                }
+
+                <!-- Status Badge -->
+                @if (comment.status === 'pending') {
+                <span
+                  class="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 rounded-full"
+                >
+                  <svg
+                    class="w-3 h-3 mr-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  Pendiente
+                </span>
+                } @if (comment.metadata?.isEdited) {
+                <span class="text-xs text-gray-500 dark:text-gray-400">
+                  (editado)
+                </span>
+                }
+              </div>
+
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <time [dateTime]="comment.createdAt.toISOString()">
+                  {{ comment.createdAt | date : "dd/MM/yyyy HH:mm" }}
+                </time>
+                @if (comment.level > 0) {
+                <span class="mx-1">·</span>
+                <span>Respuesta</span>
+                }
+              </p>
+            </div>
+          </div>
+
+          <!-- Comment Actions Menu -->
+          <div class="flex items-center space-x-2">
+            <button
+              (click)="onReportComment(comment)"
+              class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              title="Reportar comentario"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Comment Content -->
+        <div class="comment-content mb-4">
+          <p
+            class="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap"
+          >
+            {{ comment.content }}
+          </p>
+        </div>
+
+        <!-- Comment Actions -->
+        <div class="comment-actions flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <!-- Like Button -->
+            <button
+              (click)="onToggleLike(comment)"
+              [class.text-green-600]="comment.isLikedByUser"
+              [class.dark:text-green-400]="comment.isLikedByUser"
+              class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
+            >
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"
+                ></path>
+              </svg>
+              {{ comment.likes }}
+            </button>
+
+            <!-- Dislike Button -->
+            <button
+              (click)="onToggleDislike(comment)"
+              [class.text-red-600]="comment.isDislikedByUser"
+              [class.dark:text-red-400]="comment.isDislikedByUser"
+              class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
+            >
+              <svg
+                class="w-4 h-4 mr-1 transform rotate-180"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"
+                ></path>
+              </svg>
+              {{ comment.dislikes }}
+            </button>
+
+            <!-- Reply Button -->
+            @if (allowComments && comment.level < maxDepth) {
+            <button
+              (click)="onReplyToComment(comment)"
+              class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+            >
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+              Responder
+            </button>
+            }
+          </div>
+
+          <!-- Collapse/Expand Button -->
+          @if (comment.replies.length > 0) {
+          <button
+            (click)="onToggleExpand(comment)"
+            class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
+          >
+            @if (comment.isExpanded) {
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            Ocultar {{ comment.replies.length }} respuesta{{
+              comment.replies.length !== 1 ? "s" : ""
+            }}
+            } @else {
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            Mostrar {{ comment.replies.length }} respuesta{{
+              comment.replies.length !== 1 ? "s" : ""
+            }}
+            }
+          </button>
+          }
+        </div>
+      </div>
+
+      <!-- Nested Replies -->
+      @if (comment.replies.length > 0 && comment.isExpanded) {
+      <div
+        class="replies mt-4 ml-6 space-y-4 border-l-2 border-gray-200 dark:border-gray-700 pl-4"
+      >
+        @for (reply of comment.replies; track trackByCommentId($index, reply)) {
+        <!-- Recursive reply rendering would go here -->
+        <!-- For simplicity, we'll render just one level -->
+        <div [id]="'comment-' + reply.id" class="reply-item">
+          <div
+            class="comment-card bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+          >
+            <!-- Reply Header -->
+            <div class="flex items-start space-x-3 mb-3">
+              <!-- Avatar -->
+              <div class="flex-shrink-0">
+                @if (reply.author.avatar) {
+                <img
+                  [src]="reply.author.avatar"
+                  [alt]="reply.author.name"
+                  class="w-8 h-8 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-600"
+                />
+                } @else {
+                <div
+                  class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-600 dark:text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                }
+              </div>
+
+              <!-- Author Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  @if (reply.author.website) {
+                  <a
+                    [href]="reply.author.website"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-medium text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                  >
+                    {{ reply.author.name }}
+                  </a>
+                  } @else {
+                  <span
+                    class="font-medium text-gray-900 dark:text-white text-sm"
+                  >
+                    {{ reply.author.name }}
+                  </span>
+                  } @if (reply.status === 'pending') {
+                  <span
+                    class="inline-flex items-center px-1.5 py-0.5 text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 rounded-full"
+                  >
+                    Pendiente
+                  </span>
+                  }
+                </div>
+
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <time [dateTime]="reply.createdAt.toISOString()">
+                    {{ reply.createdAt | date : "dd/MM/yyyy HH:mm" }}
+                  </time>
+                </p>
+              </div>
+            </div>
+
+            <!-- Reply Content -->
+            <div class="reply-content mb-3">
+              <p
+                class="text-gray-900 dark:text-white text-sm leading-relaxed whitespace-pre-wrap"
+              >
+                {{ reply.content }}
+              </p>
+            </div>
+
+            <!-- Reply Actions -->
+            <div class="flex items-center space-x-3">
+              <!-- Like Button -->
+              <button
+                (click)="onToggleLike(reply)"
+                [class.text-green-600]="reply.isLikedByUser"
+                [class.dark:text-green-400]="reply.isLikedByUser"
+                class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-200"
+              >
+                <svg
+                  class="w-3 h-3 mr-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"
+                  ></path>
+                </svg>
+                {{ reply.likes }}
+              </button>
+
+              <!-- Dislike Button -->
+              <button
+                (click)="onToggleDislike(reply)"
+                [class.text-red-600]="reply.isDislikedByUser"
+                [class.dark:text-red-400]="reply.isDislikedByUser"
+                class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
+              >
+                <svg
+                  class="w-3 h-3 mr-1 transform rotate-180"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"
+                  ></path>
+                </svg>
+                {{ reply.dislikes }}
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    } }
+  </div>
+
+  <!-- Load More Button -->
+  @if (canLoadMore()) {
+  <div class="load-more text-center pt-8">
+    <button
+      (click)="onLoadMore()"
+      class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-colors duration-200"
+    >
+      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      Cargar más comentarios
+    </button>
+  </div>
+  } }
+</section>

@@ -1,0 +1,354 @@
+<!-- Popular Posts Widget -->
+<div [class]="getContainerClasses()">
+  <!-- Widget Header -->
+  <div class="widget-header mb-6">
+    <div class="flex items-center justify-between">
+      <h3
+        class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2"
+      >
+        <svg
+          class="w-5 h-5 text-orange-500"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+          ></path>
+        </svg>
+        {{ finalConfig().title }}
+      </h3>
+
+      @if (!loading()) {
+      <button
+        (click)="refresh()"
+        class="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+        title="Actualizar"
+        aria-label="Actualizar artículos populares"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </button>
+      }
+    </div>
+
+    <!-- Stats Summary (for featured variant) -->
+    @if (variant === 'featured' && !loading() && posts().length > 0) {
+    <div class="mt-4 grid grid-cols-3 gap-4 text-center">
+      <div class="stat-item">
+        <div class="text-xl font-bold text-blue-600 dark:text-blue-400">
+          {{ postsStats().total }}
+        </div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">Artículos</div>
+      </div>
+      <div class="stat-item">
+        <div class="text-xl font-bold text-green-600 dark:text-green-400">
+          {{ formatViews(postsStats().totalViews) }}
+        </div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">Vistas</div>
+      </div>
+      <div class="stat-item">
+        <div class="text-xl font-bold text-purple-600 dark:text-purple-400">
+          {{ postsStats().avgReadingTime }}min
+        </div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">Promedio</div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-state space-y-4">
+    @for (item of [1,2,3,4,5]; track item) {
+    <div class="animate-pulse">
+      @if (finalConfig().showThumbnails) {
+      <div class="flex gap-3">
+        <div
+          class="w-16 h-16 bg-gray-300 dark:bg-gray-600 rounded-lg flex-shrink-0"
+        ></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+          <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+        </div>
+      </div>
+      } @else {
+      <div class="space-y-2">
+        <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-4/5"></div>
+        <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+  <div class="error-state text-center py-6">
+    <svg
+      class="w-12 h-12 mx-auto text-red-400 dark:text-red-500 mb-3"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      ></path>
+    </svg>
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      {{ error() }}
+    </p>
+    <button
+      (click)="refresh()"
+      class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+    >
+      Intentar nuevamente
+    </button>
+  </div>
+  }
+
+  <!-- Empty State -->
+  @else if (filteredPosts().length === 0) {
+  <div class="empty-state text-center py-6">
+    <svg
+      class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-3"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+      ></path>
+    </svg>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      No hay artículos populares disponibles
+    </p>
+  </div>
+  }
+
+  <!-- Posts List -->
+  @else {
+  <div class="posts-list space-y-4">
+    @for (post of filteredPosts(); track trackByPostId($index, post)) {
+    <article [class]="getPostItemClasses(post, $index)">
+      <div class="post-content">
+        <!-- Ranking Badge -->
+        @if (layout !== 'minimal' && $index < 3) {
+        <div class="ranking-badge" [attr.data-rank]="$index + 1">
+          {{ getRankingIcon($index) }}
+        </div>
+        }
+
+        <!-- Post Layout -->
+        <div class="post-layout">
+          <!-- Thumbnail -->
+          @if (finalConfig().showThumbnails) {
+          <div class="post-thumbnail">
+            <a
+              [routerLink]="['/blog', post.slug]"
+              (click)="onPostClick(post)"
+              class="thumbnail-link block"
+            >
+              <img
+                [src]="post.featuredImage"
+                [alt]="post.title"
+                class="w-full h-full object-cover rounded-lg transition-transform duration-200 hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          </div>
+          }
+
+          <!-- Post Info -->
+          <div class="post-info">
+            <!-- Title -->
+            <h4 class="post-title">
+              <a
+                [routerLink]="['/blog', post.slug]"
+                (click)="onPostClick(post)"
+                class="title-link hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+              >
+                {{ post.title }}
+              </a>
+            </h4>
+
+            <!-- Excerpt -->
+            @if (finalConfig().showExcerpt && post.excerpt) {
+            <p
+              class="post-excerpt text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2"
+            >
+              {{ post.excerpt }}
+            </p>
+            }
+
+            <!-- Meta Information -->
+            <div
+              class="post-meta mt-2 flex items-center justify-between flex-wrap gap-2"
+            >
+              <div
+                class="meta-left flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400"
+              >
+                <!-- Date -->
+                @if (finalConfig().showDate) {
+                <span class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fill-rule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  {{ formatRelativeDate(post.publishedAt || post.createdAt) }}
+                </span>
+                }
+
+                <!-- Views -->
+                @if (finalConfig().showViews && post.views) {
+                <span class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                    <path
+                      fill-rule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  {{ formatViews(post.views) }}
+                </span>
+                }
+
+                <!-- Reading Time -->
+                <span class="flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  {{ post.readingTime }} min
+                </span>
+              </div>
+
+              <!-- Actions -->
+              <div class="meta-right flex items-center gap-2">
+                <!-- Bookmark Button -->
+                @if (finalConfig().showBookmark) {
+                <button
+                  (click)="onBookmarkToggle(post)"
+                  [class.bookmarked]="isBookmarked(post.id)"
+                  class="bookmark-btn p-1 rounded-full transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  [title]="
+                    isBookmarked(post.id)
+                      ? 'Quitar de favoritos'
+                      : 'Añadir a favoritos'
+                  "
+                  [attr.aria-label]="
+                    isBookmarked(post.id)
+                      ? 'Quitar de favoritos'
+                      : 'Añadir a favoritos'
+                  "
+                >
+                  @if (isBookmarked(post.id)) {
+                  <!-- Bookmarked Icon -->
+                  <svg
+                    class="w-4 h-4 text-yellow-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"
+                    ></path>
+                  </svg>
+                  } @else {
+                  <!-- Bookmark Icon -->
+                  <svg
+                    class="w-4 h-4 text-gray-400 hover:text-yellow-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                    ></path>
+                  </svg>
+                  }
+                </button>
+                }
+
+                <!-- Share Button (for featured variant) -->
+                @if (variant === 'featured') {
+                <button
+                  class="share-btn p-1 rounded-full transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-blue-500"
+                  title="Compartir artículo"
+                  aria-label="Compartir artículo"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+                    ></path>
+                  </svg>
+                </button>
+                }
+              </div>
+            </div>
+
+            <!-- Tags (for featured variant) -->
+            @if (variant === 'featured' && post.tags && post.tags.length > 0) {
+            <div class="post-tags mt-2 flex flex-wrap gap-1">
+              @for (tag of post.tags.slice(0, 3); track tag) {
+              <span
+                class="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full"
+              >
+                {{ tag }}
+              </span>
+              } @if (post.tags.length > 3) {
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                +{{ post.tags.length - 3 }} más
+              </span>
+              }
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </article>
+    }
+  </div>
+  }
+
+  <!-- Widget Footer -->
+  @if (!loading() && filteredPosts().length > 0 && variant === 'sidebar') {
+  <div
+    class="widget-footer mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+  >
+    <a
+      [routerLink]="['/blog']"
+      class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200"
+    >
+      Ver todos los artículos
+      <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </a>
+  </div>
+  }
+</div>

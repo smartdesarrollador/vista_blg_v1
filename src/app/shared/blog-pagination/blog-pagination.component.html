@@ -1,0 +1,329 @@
+<!-- Blog Pagination Container -->
+<nav
+  [class]="containerClasses()"
+  role="navigation"
+  aria-label="Navegación de páginas del blog"
+  (keydown)="onKeyDown($event)"
+  tabindex="0"
+>
+  <!-- Paginación Numérica -->
+  @if (finalConfig().type === 'numeric' && pagination) {
+
+  <!-- Información de resultados (móvil oculta) -->
+  @if (finalConfig().showInfo && !finalConfig().compact) {
+  <div class="hidden md:block text-sm text-gray-700 dark:text-gray-300 mr-4">
+    {{ formatItemsInfo() }}
+  </div>
+  }
+
+  <div class="flex items-center space-x-1">
+    <!-- Botón Primera Página -->
+    @if (finalConfig().showFirstLast && pagination.totalPages >
+    finalConfig().maxVisiblePages) {
+    <button
+      type="button"
+      (click)="goToFirstPage()"
+      [disabled]="pagination.currentPage === 1 || disabled || loading"
+      [class]="getNavigationButtonClass(pagination.currentPage === 1)"
+      [attr.aria-label]="'Ir a la primera página'"
+      title="Primera página (Home)"
+    >
+      <svg
+        class="w-4 h-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M15.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L11.414 9H17a1 1 0 110 2h-5.586l4.293 4.293a1 1 0 010 1.414zM9 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      @if (!finalConfig().compact) {
+      <span class="hidden sm:inline ml-1">Primera</span>
+      }
+    </button>
+    }
+
+    <!-- Botón Página Anterior -->
+    @if (finalConfig().showPrevNext) {
+    <button
+      type="button"
+      (click)="goToPreviousPage()"
+      [disabled]="!pagination.hasPrevious || disabled || loading"
+      [class]="getNavigationButtonClass(!pagination.hasPrevious)"
+      [attr.aria-label]="'Ir a la página anterior'"
+      title="Página anterior (← Arrow Left)"
+    >
+      <svg
+        class="w-4 h-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      @if (!finalConfig().compact) {
+      <span class="hidden sm:inline ml-1">Anterior</span>
+      }
+    </button>
+    }
+
+    <!-- Páginas Numeradas -->
+    <div class="flex items-center space-x-1" role="group" aria-label="Páginas">
+      @for (page of visiblePages(); track trackByPage($index, page)) { @if
+      (isEllipsis(page)) {
+      <!-- Elipsis -->
+      <span [class]="getPageButtonClass(page)" aria-hidden="true"> ... </span>
+      } @else {
+      <!-- Botón de Página -->
+      <button
+        type="button"
+        (click)="handlePageClick(page)"
+        [disabled]="disabled || loading"
+        [class]="getPageButtonClass(page)"
+        [attr.aria-label]="
+          isCurrentPage(page)
+            ? 'Página actual, página ' + page
+            : 'Ir a la página ' + page
+        "
+        [attr.aria-current]="isCurrentPage(page) ? 'page' : null"
+      >
+        {{ page }}
+      </button>
+      } }
+    </div>
+
+    <!-- Botón Página Siguiente -->
+    @if (finalConfig().showPrevNext) {
+    <button
+      type="button"
+      (click)="goToNextPage()"
+      [disabled]="!pagination.hasNext || disabled || loading"
+      [class]="getNavigationButtonClass(!pagination.hasNext)"
+      [attr.aria-label]="'Ir a la página siguiente'"
+      title="Página siguiente (→ Arrow Right)"
+    >
+      @if (!finalConfig().compact) {
+      <span class="hidden sm:inline mr-1">Siguiente</span>
+      }
+      <svg
+        class="w-4 h-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </button>
+    }
+
+    <!-- Botón Última Página -->
+    @if (finalConfig().showFirstLast && pagination.totalPages >
+    finalConfig().maxVisiblePages) {
+    <button
+      type="button"
+      (click)="goToLastPage()"
+      [disabled]="
+        pagination.currentPage === pagination.totalPages || disabled || loading
+      "
+      [class]="
+        getNavigationButtonClass(
+          pagination.currentPage === pagination.totalPages
+        )
+      "
+      [attr.aria-label]="'Ir a la última página'"
+      title="Última página (End)"
+    >
+      @if (!finalConfig().compact) {
+      <span class="hidden sm:inline mr-1">Última</span>
+      }
+      <svg
+        class="w-4 h-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4.293 4.293a1 1 0 011.414 0l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414-1.414L8.586 11H3a1 1 0 110-2h5.586L4.293 5.707a1 1 0 010-1.414zM11 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </button>
+    }
+  </div>
+
+  <!-- Jump to Page (Desktop) -->
+  @if (finalConfig().showJumpTo && !finalConfig().compact &&
+  pagination.totalPages > 10) {
+  <div class="hidden lg:flex items-center ml-4 space-x-2">
+    <label for="jump-to-page" class="text-sm text-gray-700 dark:text-gray-300">
+      Ir a:
+    </label>
+    <input
+      #jumpInput
+      id="jump-to-page"
+      type="number"
+      [value]="jumpToValue()"
+      (input)="onJumpToChange(jumpInput.value)"
+      (keydown.enter)="onJumpToSubmit()"
+      [min]="1"
+      [max]="pagination.totalPages"
+      [disabled]="disabled || loading"
+      class="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+      placeholder="1"
+    />
+    <button
+      type="button"
+      (click)="onJumpToSubmit()"
+      [disabled]="disabled || loading || !jumpToValue()"
+      class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      Ir
+    </button>
+  </div>
+  } }
+
+  <!-- Paginación Load More -->
+  @if (finalConfig().type === 'loadmore' && pagination && pagination.hasNext) {
+  <div class="w-full flex flex-col items-center space-y-3">
+    <!-- Información de resultados -->
+    @if (finalConfig().showInfo) {
+    <div class="text-sm text-gray-600 dark:text-gray-400 text-center">
+      {{ formatItemsInfo() }}
+    </div>
+    }
+
+    <!-- Botón Load More -->
+    <button
+      type="button"
+      (click)="onLoadMore()"
+      [disabled]="disabled || loading"
+      class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-105"
+      [attr.aria-label]="
+        loading ? 'Cargando más contenido' : 'Cargar más contenido'
+      "
+    >
+      @if (loading) {
+      <!-- Loading Spinner -->
+      <svg
+        class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      {{ finalConfig().loadingText }}
+      } @else {
+      <!-- Load More Icon -->
+      <svg
+        class="w-5 h-5 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      {{ finalConfig().loadMoreText }}
+      }
+    </button>
+  </div>
+  }
+
+  <!-- Estados de Error/Vacío -->
+  @if (pagination && pagination.totalItems === 0) {
+  <div class="w-full text-center py-8">
+    <div class="text-gray-500 dark:text-gray-400">
+      <svg
+        class="mx-auto h-12 w-12 mb-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        ></path>
+      </svg>
+      <p class="text-lg font-medium">No se encontraron resultados</p>
+      <p class="text-sm">Intenta ajustar tus filtros de búsqueda</p>
+    </div>
+  </div>
+  }
+
+  <!-- Información Móvil (Solo para paginación numérica) -->
+  @if (finalConfig().type === 'numeric' && finalConfig().showInfo &&
+  finalConfig().compact && pagination) {
+  <div
+    class="w-full text-center text-xs text-gray-600 dark:text-gray-400 mt-2 md:hidden"
+  >
+    Página {{ pagination.currentPage }} de {{ pagination.totalPages }}
+  </div>
+  }
+
+  <!-- Loading Overlay -->
+  @if (loading && finalConfig().type === 'numeric') {
+  <div
+    class="absolute inset-0 bg-white/50 dark:bg-gray-900/50 rounded-lg flex items-center justify-center"
+  >
+    <div class="flex items-center space-x-2 text-blue-600">
+      <svg
+        class="animate-spin h-5 w-5"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <span class="text-sm font-medium">{{ finalConfig().loadingText }}</span>
+    </div>
+  </div>
+  }
+
+  <!-- Instrucciones de navegación por teclado (Screen readers) -->
+  <div class="sr-only">
+    Usa las flechas izquierda y derecha para navegar entre páginas. Presiona
+    Home para ir a la primera página o End para ir a la última página.
+  </div>
+</nav>

@@ -1,0 +1,72 @@
+<div class="banner-carousel-container">
+  <!-- Mostrar loader mientras carga los datos -->
+  <div *ngIf="isLoading()" class="loader-container">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Mostrar mensaje de error si hay alguno -->
+  <div *ngIf="error() && !isLoading()" class="error-container">
+    <p>{{ error() }}</p>
+  </div>
+
+  <!-- Mostrar el carousel cuando los datos están cargados y no hay errores -->
+  <div
+    *ngIf="banners().length > 0 && !isLoading() && !error()"
+    class="banner-carousel w-full"
+  >
+    <swiper-container
+      #swiperContainer
+      class="w-full h-full"
+      autoplay-delay="4000"
+      autoplay-disable-on-interaction="false"
+      speed="1000"
+      loop="true"
+      effect="fade"
+      navigation="true"
+      pagination="true"
+      pagination-clickable="true"
+      pagination-dynamic-bullets="true"
+    >
+      <swiper-slide
+        *ngFor="let banner of banners(); let i = index"
+        class="w-full"
+      >
+        <div
+          class="banner-slide relative w-full h-full"
+          [@bannerAnimation]="activeIndex()"
+        >
+          <img
+            [src]="getImageUrl(banner.imagen)"
+            [alt]="banner.titulo"
+            class="banner-image"
+          />
+
+          <div class="banner-content w-full">
+            <div class="container mx-auto px-4 lg:px-8">
+              <div class="max-w-3xl">
+                <h2 class="slide-title">{{ banner.titulo }}</h2>
+                <p *ngIf="banner.descripcion" class="slide-description">
+                  {{ banner.descripcion }}
+                </p>
+                <button
+                  class="slide-button"
+                  (click)="openLink(banner.enlace_boton)"
+                >
+                  {{ banner.texto_boton }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </swiper-slide>
+    </swiper-container>
+  </div>
+
+  <!-- Mensaje cuando no hay banners -->
+  <div
+    *ngIf="banners().length === 0 && !isLoading() && !error()"
+    class="p-8 text-center text-gray-600"
+  >
+    No hay banners disponibles en este momento.
+  </div>
+</div>

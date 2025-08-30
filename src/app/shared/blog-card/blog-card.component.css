@@ -1,0 +1,183 @@
+/* Blog Card Component Styles */
+
+/* Animaciones personalizadas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Utilidades para truncar texto */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Estilos específicos del blog card */
+.blog-card {
+  cursor: pointer;
+  will-change: transform;
+}
+
+/* Mejoras para hover en el card completo */
+.blog-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode específico para el card */
+.dark .blog-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Transición suave para el pseudo elemento del enlace */
+.blog-card a::after {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Estilos para el contenedor de imagen */
+.blog-card .group:hover img {
+  transform: scale(1.05);
+}
+
+/* Optimización para animaciones */
+.blog-card * {
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Estados de focus mejorados */
+.blog-card:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Transiciones suaves para botones de acción */
+.blog-card button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.blog-card button:hover {
+  transform: scale(1.1);
+}
+
+.blog-card button:active {
+  transform: scale(0.95);
+}
+
+/* Estilos para las categorías */
+.blog-card [style*="background-color"] {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .blog-card,
+  .blog-card *,
+  .animate-fadeInUp {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Optimizaciones para móviles */
+@media (max-width: 768px) {
+  .blog-card {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .blog-card:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Estilos para el gradiente de overlay */
+.gradient-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    transparent 100%
+  );
+}
+
+/* Mejoras para el loading state */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.dark .loading-skeleton {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}
+
+/* Estilos para el badge de destacado */
+.featured-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4);
+}
+
+/* Mejoras para la tipografía */
+.blog-card h3 {
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Estilos para mejorar la legibilidad */
+.blog-card p {
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* Optimización para Safari */
+@supports (-webkit-backdrop-filter: blur(10px)) {
+  .backdrop-blur-sm {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Estilos para print */
+@media print {
+  .blog-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+  }
+
+  .blog-card button,
+  .blog-card .absolute {
+    display: none !important;
+  }
+}

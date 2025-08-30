@@ -1,0 +1,549 @@
+<!-- Navbar fijo con diseño responsive -->
+<nav
+  class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md z-50 transition-all duration-300"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <!-- Logo y nombre -->
+      <div class="flex items-center">
+        <a routerLink="/" class="flex-shrink-0 flex items-center">
+          <!-- Logo desde la configuración -->
+          <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo" class="h-8 w-auto" />
+          <!-- Icono por defecto si no hay logo -->
+          <svg
+            *ngIf="!logoUrl"
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            [style.color]="colorPrimario"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.5a1 1 0 102 0V5zM10 9a1 1 0 100-2 1 1 0 000 2z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span class="ml-2 text-xl font-bold" [style.color]="colorTexto">
+            {{ nombreSitio }}
+          </span>
+        </a>
+      </div>
+
+      <!-- Menú principal - Visible en pantallas medianas y grandes -->
+      <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+        <a
+          routerLink="/"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Inicio</a
+        >
+        <a
+          routerLink="/about"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >About</a
+        >
+
+        <!-- Menú Blog con dropdown de categorías -->
+        <div class="relative desktop-menu-dropdown">
+          <button
+            (click)="toggleBlogSubmenu($event)"
+            class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center"
+            [style.color]="colorTexto"
+            [style.hover-color]="colorEnlaces"
+            [ngClass]="{ 'text-indigo-600': blogSubmenuOpen }"
+            [style.color-indigo]="colorPrimario"
+          >
+            Blog
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="ml-1 h-4 w-4 transition-transform duration-200"
+              [class.rotate-180]="blogSubmenuOpen"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <!-- Submenú del Blog -->
+          <div
+            *ngIf="blogSubmenuOpen"
+            class="absolute left-0 mt-5 w-64 rounded-xl shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50 desktop-menu-dropdown overflow-hidden"
+          >
+            <div class="py-2" role="menu" aria-orientation="vertical">
+              <!-- Enlaces principales del blog -->
+              <a
+                routerLink="/blog"
+                class="block px-4 py-3 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600 border-b border-gray-100 dark:border-gray-600"
+                role="menuitem"
+                [style.color]="colorTexto"
+              >
+                <div class="flex items-center">
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M2 6a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"
+                    ></path>
+                  </svg>
+                  Todos los Artículos
+                </div>
+              </a>
+              <a
+                routerLink="/blog/search"
+                class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                role="menuitem"
+                [style.color]="colorTexto"
+              >
+                <div class="flex items-center">
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  Buscar Artículos
+                </div>
+              </a>
+
+              <!-- Categorías populares -->
+              <div
+                *ngIf="categoriesPopulares.length > 0"
+                class="border-t border-gray-100 dark:border-gray-600 mt-1 pt-1"
+              >
+                <div
+                  class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider"
+                >
+                  Categorías Populares
+                </div>
+                <a
+                  *ngFor="
+                    let categoria of categoriesPopulares;
+                    trackBy: trackByCategoria
+                  "
+                  [routerLink]="['/blog/categoria', categoria.slug]"
+                  class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                  role="menuitem"
+                  [style.color]="colorTexto"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="flex items-center">
+                      <span
+                        class="w-2 h-2 rounded-full mr-2"
+                        [style.background-color]="
+                          categoria.color || colorPrimario
+                        "
+                      >
+                      </span>
+                      {{ categoria.name }}
+                    </span>
+                    <span class="text-xs text-gray-400">{{
+                      categoria.postsCount || 0
+                    }}</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Menú con submenú - Con clicks en lugar de hover -->
+        <div class="relative desktop-menu-dropdown">
+          <button
+            (click)="toggleDesktopSubmenu($event)"
+            class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium flex items-center"
+            [style.color]="colorTexto"
+            [style.hover-color]="colorEnlaces"
+            [ngClass]="{ 'text-indigo-600': desktopSubmenuOpen }"
+            [style.color-indigo]="colorPrimario"
+          >
+            Servicios
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="ml-1 h-4 w-4 transition-transform duration-200"
+              [class.rotate-180]="desktopSubmenuOpen"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <!-- Submenú con visibilidad controlada por variables -->
+          <div
+            *ngIf="desktopSubmenuOpen"
+            class="absolute left-0 mt-5 w-52 rounded-xl shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50 desktop-menu-dropdown overflow-hidden"
+          >
+            <div class="py-2" role="menu" aria-orientation="vertical">
+              <a
+                routerLink="/about"
+                class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                role="menuitem"
+                [style.color]="colorTexto"
+                >Desarrollo Web</a
+              >
+              <a
+                routerLink="/"
+                class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                role="menuitem"
+                [style.color]="colorTexto"
+                >Diseño UX/UI</a
+              >
+              <a
+                routerLink="/"
+                class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+                role="menuitem"
+                [style.color]="colorTexto"
+                >Marketing Digital</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <a
+          routerLink="/proyectos"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Proyectos</a
+        >
+        <a
+          routerLink="/contacto"
+          class="dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+          >Contacto</a
+        >
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="hidden md:flex items-center">
+        <!-- Botón de acceso para usuarios no autenticados -->
+        <button
+          *ngIf="!currentUser"
+          routerLink="/auth/login"
+          class="ml-3 hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300"
+          [style.background-color]="colorPrimario"
+        >
+          Acceder
+        </button>
+
+        <!-- Menú de usuario para usuarios autenticados -->
+        <div *ngIf="currentUser" class="relative ml-3">
+          <button
+            (click)="toggleUserMenu($event)"
+            class="flex items-center text-sm rounded-full focus:outline-none"
+          >
+            <div
+              class="h-8 w-8 rounded-full flex items-center justify-center text-white"
+              [style.background-color]="colorPrimario"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </button>
+
+          <!-- Menú desplegable de usuario -->
+          <div
+            *ngIf="userMenuOpen"
+            class="absolute right-0 mt-2 w-48 py-1 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50"
+          >
+            <!-- Nombre del usuario -->
+            <div
+              class="px-4 py-2 font-medium border-b border-gray-200 dark:border-gray-600"
+              [style.color]="colorTexto"
+            >
+              {{ currentUser.name }}
+            </div>
+
+            <!-- Enlaces del menú -->
+            <a
+              routerLink="/cuenta"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+              role="menuitem"
+              [style.color]="colorTexto"
+            >
+              Mi cuenta
+            </a>
+            <a
+              routerLink="/favoritos"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
+              role="menuitem"
+              [style.color]="colorTexto"
+            >
+              Mis favoritos
+            </a>
+            <!-- Botón para cerrar sesión -->
+            <a
+              routerLink="/auth/login"
+              (click)="handleLogout($event)"
+              class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
+              role="menuitem"
+            >
+              Cerrar sesión
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón del menú móvil -->
+      <div class="flex items-center md:hidden">
+        <button
+          type="button"
+          (click)="toggleMobileMenu()"
+          class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+          [style.color]="colorTexto"
+        >
+          <svg
+            class="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16m-7 6h7"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Menú móvil, mostrado/oculto según estado -->
+  <div
+    class="md:hidden"
+    [ngClass]="{ hidden: !mobileMenuOpen, block: mobileMenuOpen }"
+  >
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a
+        routerLink="/"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        [style.hover-color]="colorEnlaces"
+        >Inicio</a
+      >
+
+      <!-- Submenú móvil -->
+      <div>
+        <button
+          (click)="toggleMobileSubmenu()"
+          class="w-full flex justify-between dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+        >
+          Servicios
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="ml-1 h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            [ngClass]="{ 'rotate-180': mobileSubmenuOpen }"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+        <div
+          class="pl-4"
+          [ngClass]="{ hidden: !mobileSubmenuOpen, block: mobileSubmenuOpen }"
+        >
+          <a
+            routerLink="/servicios/desarrollo-web"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            [style.color]="colorTexto"
+            >Desarrollo Web</a
+          >
+          <a
+            routerLink="/servicios/diseno"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            [style.color]="colorTexto"
+            >Diseño UX/UI</a
+          >
+          <a
+            routerLink="/servicios/marketing"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            [style.color]="colorTexto"
+            >Marketing Digital</a
+          >
+        </div>
+      </div>
+
+      <!-- Submenú Blog móvil -->
+      <div>
+        <button
+          (click)="toggleMobileBlogSubmenu()"
+          class="w-full flex justify-between dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+          [style.color]="colorTexto"
+          [style.hover-color]="colorEnlaces"
+        >
+          Blog
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="ml-1 h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            [ngClass]="{ 'rotate-180': mobileBlogSubmenuOpen }"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+        <div
+          class="pl-4"
+          [ngClass]="{
+            hidden: !mobileBlogSubmenuOpen,
+            block: mobileBlogSubmenuOpen
+          }"
+        >
+          <a
+            routerLink="/blog"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            [style.color]="colorTexto"
+            >Todos los Artículos</a
+          >
+          <a
+            routerLink="/blog/search"
+            class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+            [style.color]="colorTexto"
+            >Buscar</a
+          >
+          <!-- Categorías en móvil -->
+          <div
+            *ngIf="categoriesPopulares.length > 0"
+            class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600"
+          >
+            <div
+              class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+            >
+              Categorías
+            </div>
+            <a
+              *ngFor="
+                let categoria of categoriesPopulares.slice(0, 3);
+                trackBy: trackByCategoria
+              "
+              [routerLink]="['/blog/categoria', categoria.slug]"
+              class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-1 rounded-md text-sm"
+              [style.color]="colorTexto"
+            >
+              {{ categoria.name }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <a
+        routerLink="/proyectos"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        >Proyectos</a
+      >
+      <a
+        routerLink="/contacto"
+        class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-base font-medium"
+        [style.color]="colorTexto"
+        >Contacto</a
+      >
+
+      <!-- Botón de acceso (versión móvil) -->
+      <div *ngIf="!currentUser">
+        <button
+          routerLink="/auth/login"
+          class="w-full mt-2 hover:bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300"
+          [style.background-color]="colorPrimario"
+        >
+          Acceder
+        </button>
+      </div>
+
+      <!-- Opciones de usuario (versión móvil) -->
+      <div
+        *ngIf="currentUser"
+        class="border-t border-gray-200 dark:border-gray-600 pt-2"
+      >
+        <div class="px-3 py-2 font-medium" [style.color]="colorTexto">
+          {{ currentUser.name }}
+        </div>
+        <a
+          routerLink="/cuenta"
+          class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+        >
+          Mi cuenta
+        </a>
+        <a
+          routerLink="/favoritos"
+          class="block dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          [style.color]="colorTexto"
+        >
+          Mis favoritos
+        </a>
+        <!-- Opción para cerrar sesión en el menú móvil -->
+        <a
+          routerLink="/auth/login"
+          (click)="handleLogout($event)"
+          class="w-full text-left text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 px-3 py-2 rounded-md text-sm font-medium"
+        >
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Espacio para evitar que el contenido quede debajo del navbar fijo -->
+<div class="h-16"></div>
+
+<!-- Estilo global para el navbar -->
+<style>
+  :root {
+    --color-primario: {{ colorPrimario }};
+    --color-texto: {{ colorTexto }};
+    --color-enlaces: {{ colorEnlaces }};
+  }
+</style>

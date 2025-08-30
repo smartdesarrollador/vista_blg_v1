@@ -1,0 +1,112 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Reglas para trabajar de manera experta en el proyecto Angular 18 con SSR utilizando Tailwind CSS y TypeScript.
+globs: ["**/*.ts", "**/*.html"]
+alwaysApply: true
+---
+
+# Principios Clave
+
+- Proporciona ejemplos claros y precisos en Angular y TypeScript.
+- Aplica inmutabilidad y funciones puras donde sea aplicable.
+- Favorece la composición de componentes para modularidad.
+- Utiliza nombres de variables significativos (`isActive`, `hasPermission`).
+- Usa kebab-case para los nombres de archivos (`user-profile.component.ts`).
+- Prefiere exportaciones nombradas para componentes, servicios y utilidades.
+
+# TypeScript y Angular
+
+- Define las estructuras de datos utilizando interfaces para asegurar el tipado.
+- Evita el uso del tipo `any`, utiliza el sistema de tipos completamente.
+- Organiza los archivos: primero imports, luego definición y luego implementación.
+- Utiliza template strings para literales de múltiples líneas.
+- Aplica encadenamiento opcional (`?.`) y nullish coalescing (`??`).
+- Usa componentes standalone donde sea aplicable.
+- Aprovecha el sistema de señales (signals) de Angular para la gestión eficiente del estado.
+- Utiliza la función `inject` para inyectar servicios directamente en componentes, directivas o servicios.
+
+# Enfoques Adicionales por SSR
+
+- Asegura que todo contenido importante sea renderizado en el servidor.
+- Optimiza las cargas iniciales para mejorar LCP (Largest Contentful Paint).
+- Usa Angular Universal correctamente para la prerenderización y renderizado dinámico.
+- Prioriza contenido crítico en el primer render.
+- Aplica estrategias para evitar problemas de hidratación.
+
+# Convenciones de Nombres de Archivos
+
+- `*.component.ts` para Componentes.
+- `*.service.ts` para Servicios.
+- `*.module.ts` para Módulos.
+- `*.directive.ts` para Directivas.
+- `*.pipe.ts` para Pipes.
+- `*.spec.ts` para Pruebas Unitarias.
+- Todo en kebab-case.
+
+# Estilo de Código
+
+- Utiliza comillas simples `'` para literales de cadenas.
+- Indenta con 2 espacios.
+- Asegura código limpio sin espacios en blanco al final.
+- Utiliza `const` para variables inmutables.
+- Utiliza template strings para interpolación de cadenas.
+
+# Angular-Specific Guidelines
+
+- Usa el async pipe para gestionar observables en plantillas.
+- Implementa carga diferida (lazy loading) para módulos de características.
+- Aplica deferimiento de vistas (defer blocks) para optimizar el rendimiento inicial.
+- Usa la directiva `NgOptimizedImage` para la carga eficiente de imágenes.
+- Prioriza accesibilidad utilizando HTML semántico y etiquetas ARIA correctamente.
+
+# Orden de Importaciones
+
+1. Angular core y common modules.
+2. Módulos de RxJS.
+3. Otros módulos de Angular.
+4. Core de la aplicación.
+5. Módulos compartidos.
+6. Imports específicos del entorno.
+7. Imports por rutas relativas.
+
+# Manejo de Errores y Validaciones
+
+- Maneja errores adecuadamente en servicios y componentes.
+- Utiliza tipos de errores personalizados si es necesario.
+- Implementa validaciones reactivas en formularios.
+
+# Pruebas
+
+- Sigue el patrón Arrange-Act-Assert (Organizar-Actuar-Afirmar) en los tests.
+
+# Optimización de Rendimiento
+
+- Optimiza `ngFor` usando funciones `trackBy`.
+- Usa pipes puros para operaciones costosas.
+- Evita manipular el DOM directamente.
+- Aprovecha deferimiento de vistas (`@defer`) para vistas no críticas.
+- Utiliza signals para manejo reactivo eficiente del estado.
+- Usa la directiva `NgOptimizedImage` para optimizar la carga de imágenes.
+
+# Seguridad
+
+- Protege contra XSS utilizando la sanitización de Angular.
+- Sana contenido dinámico antes de renderizarlo.
+
+# Convenciones Clave
+
+- Utiliza el sistema de inyección de dependencias (`DI`) de Angular y la función `inject`.
+- Prioriza la modularidad y la reutilización.
+- Sigue la guía oficial de estilo de Angular.
+- Optimiza para métricas Web Vitals (LCP, INP, CLS).
+
+# Referencia
+
+Consulta la documentación oficial de Angular y Angular Universal para mejores prácticas de SSR, optimización de rendimiento y buenas prácticas generales.
+
+---
+

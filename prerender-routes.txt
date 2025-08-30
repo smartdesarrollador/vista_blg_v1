@@ -1,0 +1,14 @@
+/
+/about
+/blog
+/blog/search
+/blog/categoria/tecnologia
+/blog/categoria/desarrollo
+/blog/categoria/diseno
+/blog/categoria/programacion
+/blog/categoria/web
+/blog/angular-18-novedades-y-mejoras
+/blog/tailwind-css-guia-completa
+/blog/javascript-es2024-nuevas-funcionalidades
+/blog/como-crear-componentes-reutilizables
+/blog/optimizacion-web-core-vitals 

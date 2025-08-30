@@ -1,0 +1,561 @@
+/* ===== BREADCRUMB COMPONENT STYLES ===== */
+
+/* Animaciones personalizadas */
+@keyframes breadcrumbFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes breadcrumbSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes separatorPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes iconBounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-2px);
+  }
+  60% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes ellipsisAnimation {
+  0%,
+  20% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  80%,
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes mobileBackSlide {
+  from {
+    transform: translateX(-4px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Container principal */
+.breadcrumb-container {
+  @apply w-full;
+  animation: breadcrumbFadeIn 0.3s ease-out;
+}
+
+.breadcrumb-container.breadcrumb-loading {
+  @apply opacity-75;
+}
+
+.breadcrumb-container.breadcrumb-compact {
+  @apply text-xs;
+}
+
+/* Lista de breadcrumbs */
+.breadcrumb-list {
+  @apply flex-wrap;
+  gap: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .breadcrumb-list {
+    gap: 0.5rem;
+  }
+}
+
+/* Items individuales */
+.breadcrumb-item {
+  @apply transition-all duration-300;
+  animation: breadcrumbSlideIn 0.3s ease-out;
+  animation-delay: calc(var(--item-index, 0) * 0.1s);
+}
+
+.breadcrumb-item-first .breadcrumb-link,
+.breadcrumb-item-first .breadcrumb-current {
+  @apply font-medium;
+}
+
+.breadcrumb-item-last .breadcrumb-current {
+  @apply font-semibold text-gray-900 dark:text-gray-100;
+}
+
+.breadcrumb-item-active .breadcrumb-current {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+.breadcrumb-item-clickable .breadcrumb-link:hover {
+  @apply transform translate-x-0.5;
+}
+
+.breadcrumb-item-ellipsis {
+  @apply opacity-60;
+}
+
+.breadcrumb-item-ellipsis .breadcrumb-ellipsis-dots {
+  animation: ellipsisAnimation 2s infinite;
+}
+
+/* Enlaces */
+.breadcrumb-link {
+  @apply transition-all duration-200 ease-in-out;
+  @apply transform hover:scale-105;
+  @apply hover:shadow-sm;
+}
+
+.breadcrumb-link:hover .breadcrumb-icon {
+  animation: iconBounce 0.6s ease-in-out;
+}
+
+.breadcrumb-link:focus {
+  @apply transform scale-105;
+}
+
+.breadcrumb-link:active {
+  @apply transform scale-95;
+}
+
+/* Iconos */
+.breadcrumb-icon {
+  @apply transition-all duration-200;
+  @apply flex-shrink-0;
+}
+
+.breadcrumb-icon.icon-home {
+  @apply text-blue-500 dark:text-blue-400;
+}
+
+.breadcrumb-icon.icon-category {
+  @apply text-green-500 dark:text-green-400;
+}
+
+.breadcrumb-icon.icon-post {
+  @apply text-purple-500 dark:text-purple-400;
+}
+
+.breadcrumb-icon.icon-page {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.breadcrumb-icon.icon-active {
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+.breadcrumb-link:hover .breadcrumb-icon {
+  @apply text-blue-600 dark:text-blue-300;
+}
+
+/* Separadores */
+.breadcrumb-separator {
+  @apply transition-all duration-300;
+  @apply flex-shrink-0;
+}
+
+.separator-icon {
+  @apply transition-transform duration-200;
+}
+
+.breadcrumb-item:hover + .breadcrumb-item .separator-icon {
+  @apply transform scale-110;
+}
+
+.separator-arrow .separator-icon {
+  @apply text-gray-400 dark:text-gray-500;
+}
+
+.separator-chevron .separator-icon {
+  @apply text-gray-400 dark:text-gray-500;
+}
+
+.separator-slash .separator-icon {
+  @apply text-gray-400 dark:text-gray-500;
+}
+
+.separator-custom {
+  @apply text-gray-400 dark:text-gray-500 font-medium;
+}
+
+/* Texto */
+.breadcrumb-text {
+  @apply transition-colors duration-200;
+  @apply max-w-xs;
+}
+
+.breadcrumb-text.text-compact {
+  @apply max-w-[8rem];
+}
+
+.breadcrumb-link:hover .breadcrumb-text {
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+/* Elemento actual */
+.breadcrumb-current {
+  @apply transition-colors duration-200;
+}
+
+.breadcrumb-ellipsis-text {
+  @apply opacity-60 select-none;
+}
+
+/* Skeleton loading */
+.breadcrumb-skeleton {
+  @apply py-2;
+}
+
+.skeleton-item {
+  @apply animate-pulse;
+}
+
+.skeleton-separator {
+  @apply animate-pulse;
+  animation-delay: 0.1s;
+}
+
+/* Breadcrumb móvil */
+.breadcrumb-mobile {
+  @apply transition-all duration-300;
+  animation: breadcrumbFadeIn 0.3s ease-out;
+}
+
+.mobile-back-button {
+  @apply transition-all duration-200;
+  animation: mobileBackSlide 0.3s ease-out;
+}
+
+.mobile-back-button:hover {
+  @apply transform translate-x-1;
+}
+
+.mobile-back-button:active {
+  @apply transform scale-95;
+}
+
+.mobile-current {
+  @apply transition-all duration-200;
+}
+
+/* Estados de hover mejorados */
+.breadcrumb-link:hover {
+  @apply bg-blue-50 dark:bg-blue-900/20;
+  @apply border-blue-200 dark:border-blue-700;
+}
+
+.breadcrumb-link:focus {
+  @apply bg-blue-100 dark:bg-blue-900/30;
+}
+
+/* Dark mode específico */
+.dark .breadcrumb-container {
+  @apply text-gray-300;
+}
+
+.dark .breadcrumb-link {
+  @apply text-gray-400 hover:text-blue-400;
+}
+
+.dark .breadcrumb-current {
+  @apply text-gray-100;
+}
+
+.dark .breadcrumb-separator {
+  @apply text-gray-600;
+}
+
+.dark .mobile-back-button {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+/* Responsive específico */
+@media (max-width: 640px) {
+  .breadcrumb-container {
+    @apply px-2;
+  }
+
+  .breadcrumb-list {
+    @apply space-x-1 text-xs;
+  }
+
+  .breadcrumb-icon {
+    @apply h-3 w-3;
+  }
+
+  .breadcrumb-text {
+    @apply max-w-20;
+  }
+
+  .breadcrumb-separator {
+    @apply mx-0.5;
+  }
+
+  .separator-icon {
+    @apply h-3 w-3;
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumb-list {
+    @apply flex-col space-x-0 space-y-1;
+  }
+
+  .breadcrumb-item {
+    @apply w-full;
+  }
+
+  .breadcrumb-separator {
+    @apply hidden;
+  }
+
+  .breadcrumb-link,
+  .breadcrumb-current {
+    @apply w-full justify-start;
+  }
+}
+
+/* Estados de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb-container,
+  .breadcrumb-item,
+  .breadcrumb-link,
+  .breadcrumb-icon,
+  .separator-icon,
+  .mobile-back-button,
+  .breadcrumb-ellipsis-dots {
+    animation: none;
+  }
+
+  .breadcrumb-link:hover,
+  .mobile-back-button:hover {
+    @apply transform-none;
+  }
+}
+
+/* Focus visible para mejor accesibilidad */
+.breadcrumb-link:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+.mobile-back-button:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+/* Estados de alta contraste */
+@media (prefers-contrast: high) {
+  .breadcrumb-link {
+    @apply border border-gray-400 dark:border-gray-600;
+  }
+
+  .breadcrumb-link:hover {
+    @apply border-blue-600 dark:border-blue-400;
+    @apply bg-blue-100 dark:bg-blue-900;
+  }
+
+  .breadcrumb-current {
+    @apply border border-gray-600 dark:border-gray-400;
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  .breadcrumb-separator {
+    @apply text-black dark:text-white;
+  }
+}
+
+/* Print styles */
+@media print {
+  .breadcrumb-container {
+    @apply text-black bg-transparent;
+  }
+
+  .breadcrumb-link {
+    @apply text-black no-underline;
+  }
+
+  .breadcrumb-separator {
+    @apply text-black;
+  }
+
+  .breadcrumb-icon {
+    @apply hidden;
+  }
+
+  .mobile-back-button {
+    @apply hidden;
+  }
+}
+
+/* Utilidades específicas del componente */
+.breadcrumb-truncate {
+  @apply truncate max-w-32;
+}
+
+@media (min-width: 768px) {
+  .breadcrumb-truncate {
+    @apply max-w-48;
+  }
+}
+
+@media (min-width: 1024px) {
+  .breadcrumb-truncate {
+    @apply max-w-64;
+  }
+}
+
+/* Efectos de gradiente para texto largo */
+.breadcrumb-text-gradient {
+  @apply bg-gradient-to-r from-gray-900 to-gray-600;
+  @apply dark:from-gray-100 dark:to-gray-400;
+  @apply bg-clip-text text-transparent;
+}
+
+/* Indicadores visuales */
+.breadcrumb-indicator {
+  @apply absolute -top-1 -right-1 w-2 h-2;
+  @apply bg-blue-500 rounded-full;
+  @apply animate-pulse;
+}
+
+/* Mejoras de performance */
+.breadcrumb-container {
+  contain: layout style paint;
+  will-change: transform, opacity;
+}
+
+.breadcrumb-item {
+  will-change: transform;
+}
+
+.breadcrumb-link {
+  will-change: transform, background-color, color;
+}
+
+/* Estados de interacción mejorados */
+.interactive-breadcrumb {
+  @apply transition-all duration-200;
+  @apply transform active:scale-95;
+  @apply focus:ring-2 focus:ring-blue-500 focus:ring-offset-1;
+  @apply focus:outline-none;
+}
+
+/* Tooltip de información */
+.breadcrumb-tooltip {
+  @apply absolute bottom-full left-1/2 transform -translate-x-1/2;
+  @apply bg-gray-900 dark:bg-gray-700 text-white text-xs;
+  @apply px-2 py-1 rounded whitespace-nowrap;
+  @apply opacity-0 pointer-events-none transition-opacity duration-200;
+  @apply mb-1;
+}
+
+.breadcrumb-link:hover .breadcrumb-tooltip {
+  @apply opacity-100;
+}
+
+/* Estilos para diferentes tipos de breadcrumb */
+.breadcrumb-type-blog {
+  @apply border-l-2 border-blue-500 pl-2;
+}
+
+.breadcrumb-type-category {
+  @apply border-l-2 border-green-500 pl-2;
+}
+
+.breadcrumb-type-post {
+  @apply border-l-2 border-purple-500 pl-2;
+}
+
+/* Animaciones específicas para tipos */
+.breadcrumb-link[data-type="home"]:hover {
+  @apply shadow-blue-100 dark:shadow-blue-900;
+}
+
+.breadcrumb-link[data-type="category"]:hover {
+  @apply shadow-green-100 dark:shadow-green-900;
+}
+
+.breadcrumb-link[data-type="post"]:hover {
+  @apply shadow-purple-100 dark:shadow-purple-900;
+}
+
+/* Estilos para scroll horizontal en móvil */
+.breadcrumb-scroll {
+  @apply overflow-x-auto;
+}
+
+.breadcrumb-scroll::-webkit-scrollbar {
+  @apply h-1;
+}
+
+.breadcrumb-scroll::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.breadcrumb-scroll::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+/* Estados de carga específicos */
+.breadcrumb-loading-shimmer {
+  @apply relative overflow-hidden;
+}
+
+.breadcrumb-loading-shimmer::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent;
+  @apply dark:via-gray-800/60;
+  @apply transform -skew-x-12 -translate-x-full;
+  @apply animate-pulse;
+}
+
+/* Mejoras para SEO y structured data */
+.breadcrumb-structured {
+  @apply sr-only;
+}
+
+/* Estilos específicos para metadata */
+.breadcrumb-meta {
+  @apply hidden;
+}
+
+/* Estilos de debugging (solo en desarrollo) */
+.breadcrumb-debug {
+  @apply border border-red-500 bg-red-50 dark:bg-red-900/20;
+}
+
+.breadcrumb-debug .breadcrumb-item {
+  @apply border border-yellow-500;
+}

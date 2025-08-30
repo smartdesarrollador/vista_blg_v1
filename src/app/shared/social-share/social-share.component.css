@@ -1,0 +1,622 @@
+/* ============================================
+   Social Share Component Styles
+   ============================================ */
+
+/* Main Container */
+.social-share {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Layout Styles */
+
+/* Horizontal Layout */
+.layout-horizontal .platforms-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Vertical Layout */
+.layout-vertical .platforms-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+/* Grid Layout */
+.layout-grid .platforms-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+/* Base Platform Button Styles */
+.platform-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  border: 1px solid transparent;
+  text-decoration: none;
+  user-select: none;
+}
+
+.platform-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.platform-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Size Variants */
+.size-sm .platform-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.size-sm .platform-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.size-md .platform-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.size-md .platform-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.size-lg .platform-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.size-lg .platform-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Platform Icon */
+.platform-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.platform-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Platform Label */
+.platform-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Share Count */
+.share-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.375rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.375rem;
+  margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.dark .share-count {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Variant Styles */
+
+/* Default Variant */
+.variant-default .platform-btn {
+  background-color: #ffffff;
+  color: currentColor;
+  border-color: #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.dark .variant-default .platform-btn {
+  background-color: #374151;
+  color: #f3f4f6;
+  border-color: #4b5563;
+}
+
+.variant-default .platform-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .variant-default .platform-btn:hover:not(:disabled) {
+  background-color: #4b5563;
+  border-color: #6b7280;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Outline Variant */
+.variant-outline .platform-btn {
+  background-color: transparent;
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.dark .variant-outline .platform-btn {
+  color: #9ca3af;
+  border-color: #4b5563;
+}
+
+.variant-outline .platform-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  color: currentColor;
+  border-color: currentColor;
+  transform: translateY(-1px);
+}
+
+.dark .variant-outline .platform-btn:hover:not(:disabled) {
+  background-color: #1f2937;
+  border-color: currentColor;
+}
+
+/* Minimal Variant */
+.variant-minimal .platform-btn {
+  background-color: transparent;
+  color: #6b7280;
+  border-color: transparent;
+  padding: 0.5rem;
+}
+
+.dark .variant-minimal .platform-btn {
+  color: #9ca3af;
+}
+
+.variant-minimal .platform-btn:hover:not(:disabled) {
+  color: currentColor;
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.dark .variant-minimal .platform-btn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Floating Variant */
+.variant-floating .platforms-container {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 40;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.variant-floating.active .platforms-container {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.variant-floating .platform-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  padding: 0;
+  justify-content: center;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Platform-specific Colors */
+.platform-facebook:hover {
+  background-color: #1877f2 !important;
+  color: white !important;
+}
+.platform-twitter:hover {
+  background-color: #1da1f2 !important;
+  color: white !important;
+}
+.platform-linkedin:hover {
+  background-color: #0077b5 !important;
+  color: white !important;
+}
+.platform-whatsapp:hover {
+  background-color: #25d366 !important;
+  color: white !important;
+}
+.platform-telegram:hover {
+  background-color: #0088cc !important;
+  color: white !important;
+}
+.platform-reddit:hover {
+  background-color: #ff4500 !important;
+  color: white !important;
+}
+.platform-pinterest:hover {
+  background-color: #bd081c !important;
+  color: white !important;
+}
+.platform-email:hover {
+  background-color: #34495e !important;
+  color: white !important;
+}
+
+/* Copy Button Specific Styles */
+.copy-btn {
+  position: relative;
+}
+
+.copy-btn.copying {
+  background-color: #059669 !important;
+  color: white !important;
+  border-color: #059669 !important;
+}
+
+.copy-btn.copying .platform-icon {
+  animation: successBounce 0.5s ease-out;
+}
+
+@keyframes successBounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Native Share Button */
+.native-share-btn {
+  animation: slideInDown 0.4s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Platforms Container Animation */
+.platforms-container {
+  animation: slideInUp 0.5s ease-out 0.1s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Individual Platform Button Animations */
+.platform-btn {
+  animation: slideInButton 0.3s ease-out both;
+}
+
+.layout-horizontal .platform-btn:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.layout-horizontal .platform-btn:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.layout-horizontal .platform-btn:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.layout-horizontal .platform-btn:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.layout-horizontal .platform-btn:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.layout-horizontal .platform-btn:nth-child(6) {
+  animation-delay: 0.35s;
+}
+.layout-horizontal .platform-btn:nth-child(7) {
+  animation-delay: 0.4s;
+}
+.layout-horizontal .platform-btn:nth-child(8) {
+  animation-delay: 0.45s;
+}
+
+@keyframes slideInButton {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Hover Effects */
+.platform-btn:hover:not(:disabled) .platform-icon {
+  transform: scale(1.1);
+}
+
+.platform-btn:hover:not(:disabled) .share-count {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Ripple Effect */
+.platform-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: width 0.4s ease, height 0.4s ease;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+.platform-btn:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.platform-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Floating Toggle Button */
+.floating-toggle {
+  animation: bounceIn 0.8s ease-out;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.floating-toggle:hover {
+  transform: scale(1.1);
+}
+
+.floating-toggle.active {
+  transform: rotate(45deg);
+}
+
+/* Share Info */
+.share-info {
+  animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .layout-horizontal .platforms-container {
+    justify-content: center;
+  }
+
+  .layout-grid .platforms-container {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .size-md .platform-btn,
+  .size-lg .platform-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .platform-label {
+    display: none;
+  }
+
+  .variant-floating .platforms-container {
+    right: 1rem;
+    bottom: 4rem;
+  }
+
+  .floating-toggle {
+    bottom: 4rem;
+    right: 1rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .layout-horizontal .platforms-container {
+    gap: 0.25rem;
+  }
+
+  .platform-btn {
+    min-width: 2.5rem;
+    justify-content: center;
+  }
+
+  .share-count {
+    display: none;
+  }
+
+  .layout-vertical .platform-btn {
+    justify-content: center;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .social-share {
+    display: none !important;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .platform-btn:hover:not(:disabled) {
+    transform: none !important;
+  }
+
+  .platform-btn:hover:not(:disabled) .platform-icon {
+    transform: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .platform-btn {
+    border: 2px solid !important;
+    font-weight: 600 !important;
+  }
+
+  .platform-btn:hover {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+}
+
+/* Focus Management */
+.platform-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Dark Mode Adjustments */
+.dark .platform-facebook:hover {
+  background-color: #1565c0 !important;
+}
+.dark .platform-twitter:hover {
+  background-color: #1976d2 !important;
+}
+.dark .platform-linkedin:hover {
+  background-color: #0d47a1 !important;
+}
+.dark .platform-whatsapp:hover {
+  background-color: #1b5e20 !important;
+}
+.dark .platform-telegram:hover {
+  background-color: #0d47a1 !important;
+}
+.dark .platform-reddit:hover {
+  background-color: #d84315 !important;
+}
+.dark .platform-pinterest:hover {
+  background-color: #ad1457 !important;
+}
+.dark .platform-email:hover {
+  background-color: #263238 !important;
+}
+
+/* Loading States */
+.platform-btn.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.platform-btn.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Text Selection */
+.platform-label::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: inherit;
+}
+
+.platform-label::-moz-selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: inherit;
+}

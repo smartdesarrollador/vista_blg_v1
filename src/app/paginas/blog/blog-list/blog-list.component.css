@@ -1,0 +1,673 @@
+/* ===== BLOG LIST PAGE STYLES ===== */
+
+/* Animaciones personalizadas */
+@keyframes heroFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes filterPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes heroImageFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes badgeGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* Container principal */
+.blog-list-container {
+  @apply min-h-screen;
+  animation: heroFadeIn 0.6s ease-out;
+}
+
+/* Breadcrumb section */
+.breadcrumb-section {
+  @apply transition-all duration-300;
+}
+
+/* Hero Section */
+.hero-section {
+  @apply relative overflow-hidden;
+  animation: heroFadeIn 0.8s ease-out;
+}
+
+.hero-section::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5;
+  @apply dark:from-blue-400/5 dark:to-purple-400/5;
+}
+
+.hero-content {
+  @apply relative z-10;
+}
+
+.hero-title {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600;
+  @apply dark:from-blue-400 dark:to-purple-400;
+  @apply bg-clip-text text-transparent;
+  animation: heroFadeIn 1s ease-out 0.2s both;
+}
+
+.hero-subtitle {
+  animation: heroFadeIn 1s ease-out 0.4s both;
+}
+
+/* Featured Post Card */
+.featured-post-card {
+  @apply transform transition-all duration-500;
+  @apply hover:scale-[1.02] hover:shadow-2xl;
+  animation: heroFadeIn 1s ease-out 0.6s both;
+}
+
+.featured-image img {
+  @apply transition-transform duration-700;
+}
+
+.featured-post-card:hover .featured-image img {
+  @apply scale-110;
+}
+
+.featured-text {
+  @apply relative;
+}
+
+.featured-text::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-r from-black/20 to-transparent;
+  @apply rounded-l-2xl;
+}
+
+.featured-meta .badge {
+  animation: badgeGlow 3s ease-in-out infinite;
+}
+
+.featured-title {
+  @apply transition-all duration-300;
+}
+
+.featured-post-card:hover .featured-title {
+  @apply transform translate-x-1;
+}
+
+.author-avatar {
+  @apply transition-transform duration-300;
+}
+
+.featured-post-card:hover .author-avatar {
+  @apply transform scale-110;
+}
+
+.featured-cta {
+  @apply transition-all duration-300;
+  @apply hover:shadow-lg;
+}
+
+/* Search and Filters Section */
+.search-filters-section {
+  @apply transition-all duration-300;
+  @apply border-b border-gray-200 dark:border-gray-700;
+}
+
+.search-main {
+  animation: heroFadeIn 0.8s ease-out 0.2s both;
+}
+
+.quick-filters {
+  animation: heroFadeIn 0.8s ease-out 0.4s both;
+}
+
+/* Filter Buttons */
+.category-filter {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-105;
+}
+
+.filter-active {
+  @apply bg-blue-500 text-white border-blue-500;
+  @apply shadow-md;
+}
+
+.filter-inactive {
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300;
+  @apply border-gray-300 dark:border-gray-600;
+  @apply hover:bg-gray-200 dark:hover:bg-gray-600;
+}
+
+.category-filter:hover {
+  animation: filterPulse 0.6s ease-in-out;
+}
+
+/* Layout Controls */
+.layout-selector {
+  @apply transition-all duration-300;
+}
+
+.layout-btn {
+  @apply transition-all duration-200;
+}
+
+.layout-active {
+  @apply bg-blue-500 text-white;
+  @apply shadow-sm;
+}
+
+.layout-inactive {
+  @apply text-gray-500 dark:text-gray-400;
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+  @apply hover:text-gray-700 dark:hover:text-gray-300;
+}
+
+/* Active Filters Bar */
+.active-filters-bar {
+  @apply transition-all duration-300;
+  animation: cardSlideUp 0.5s ease-out;
+}
+
+.active-filter {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-105;
+  @apply shadow-sm hover:shadow-md;
+}
+
+.clear-filters-btn {
+  @apply transition-all duration-200;
+  @apply transform hover:scale-105;
+}
+
+/* Main Content */
+.main-content {
+  @apply transition-all duration-300;
+}
+
+.content-grid {
+  @apply grid gap-8;
+  @apply grid-cols-1;
+}
+
+.content-grid.with-sidebar {
+  @apply lg:grid-cols-4;
+}
+
+.content-grid.with-sidebar .posts-section {
+  @apply lg:col-span-3;
+}
+
+.content-grid.with-sidebar .sidebar-section {
+  @apply lg:col-span-1;
+}
+
+/* Results Header */
+.results-header {
+  animation: cardSlideUp 0.6s ease-out;
+}
+
+.results-title {
+  @apply transition-colors duration-300;
+}
+
+.results-count {
+  @apply transition-colors duration-300;
+}
+
+/* Posts Grid Layouts */
+.posts-grid {
+  @apply transition-all duration-500;
+}
+
+/* Grid estándar */
+.grid-standard {
+  @apply gap-6;
+}
+
+.grid-standard .post-card {
+  animation: cardSlideUp 0.6s ease-out;
+  animation-delay: calc(var(--card-index, 0) * 0.1s);
+}
+
+/* Layout de lista */
+.grid-list .post-card {
+  @apply mb-6;
+  animation: cardSlideUp 0.6s ease-out;
+  animation-delay: calc(var(--card-index, 0) * 0.05s);
+}
+
+/* Layout masonry */
+.grid-masonry {
+  @apply gap-6;
+}
+
+.grid-masonry .post-card {
+  @apply break-inside-avoid mb-6;
+  animation: cardSlideUp 0.6s ease-out;
+  animation-delay: calc(var(--card-index, 0) * 0.08s);
+}
+
+/* Loading States */
+.loading-state {
+  animation: heroFadeIn 0.5s ease-out;
+}
+
+.loading-grid {
+  @apply gap-6;
+}
+
+.loading-card {
+  animation: cardSlideUp 0.6s ease-out;
+  animation-delay: calc(var(--card-index, 0) * 0.1s);
+}
+
+.card-skeleton {
+  @apply transition-all duration-300;
+}
+
+/* Skeleton Shimmer Effect */
+.skeleton-image,
+.skeleton-title,
+.skeleton-excerpt > div,
+.skeleton-meta > div {
+  @apply relative overflow-hidden;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+.dark .skeleton-image,
+.dark .skeleton-title,
+.dark .skeleton-excerpt > div,
+.dark .skeleton-meta > div {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200px 100%;
+}
+
+/* Empty State */
+.empty-state {
+  animation: heroFadeIn 0.8s ease-out;
+}
+
+.empty-icon svg {
+  @apply transition-transform duration-300;
+}
+
+.empty-state:hover .empty-icon svg {
+  @apply transform scale-110;
+}
+
+.empty-action {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-105;
+  @apply hover:shadow-lg;
+}
+
+/* Error State */
+.error-state {
+  animation: heroFadeIn 0.8s ease-out;
+}
+
+.error-icon svg {
+  @apply transition-transform duration-300;
+}
+
+.error-state:hover .error-icon svg {
+  @apply transform scale-110;
+}
+
+.error-retry {
+  @apply transition-all duration-300;
+  @apply transform hover:scale-105;
+  @apply hover:shadow-lg;
+}
+
+/* Pagination Section */
+.pagination-section {
+  animation: cardSlideUp 0.6s ease-out;
+}
+
+/* Sidebar */
+.sidebar-section {
+  animation: cardSlideUp 0.6s ease-out 0.2s both;
+}
+
+.sidebar-sticky {
+  @apply transition-all duration-300;
+}
+
+/* Responsive específico */
+@media (max-width: 1024px) {
+  .content-grid.with-sidebar {
+    @apply grid-cols-1;
+  }
+
+  .sidebar-section {
+    @apply order-first lg:order-last;
+  }
+
+  .hero-section {
+    @apply py-8;
+  }
+
+  .hero-title {
+    @apply text-3xl md:text-4xl;
+  }
+
+  .featured-post-card {
+    @apply mx-4;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    @apply px-4;
+  }
+
+  .featured-content {
+    @apply grid-cols-1;
+  }
+
+  .featured-text {
+    @apply p-6;
+  }
+
+  .featured-title {
+    @apply text-xl;
+  }
+
+  .quick-filters {
+    @apply flex-col items-start gap-4;
+  }
+
+  .filter-categories {
+    @apply w-full;
+  }
+
+  .view-controls {
+    @apply w-full justify-between;
+  }
+
+  .posts-grid.grid-standard {
+    @apply grid-cols-1;
+  }
+
+  .posts-grid.grid-masonry {
+    @apply columns-1;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-title {
+    @apply text-2xl;
+  }
+
+  .hero-subtitle {
+    @apply text-base;
+  }
+
+  .featured-text {
+    @apply p-4;
+  }
+
+  .featured-author {
+    @apply flex-col space-y-4;
+  }
+
+  .filter-categories {
+    @apply flex-wrap;
+  }
+
+  .category-filter {
+    @apply text-xs px-2 py-1;
+  }
+
+  .active-filters-content {
+    @apply flex-col items-start gap-4;
+  }
+
+  .active-filters-list {
+    @apply w-full;
+  }
+}
+
+/* Dark mode específico */
+.dark .hero-section {
+  @apply bg-gray-800;
+}
+
+.dark .featured-post-card {
+  @apply from-blue-700 to-purple-700;
+}
+
+.dark .search-filters-section {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .filter-active {
+  @apply bg-blue-600 border-blue-600;
+}
+
+.dark .layout-active {
+  @apply bg-blue-600;
+}
+
+/* Estados de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .blog-list-container,
+  .hero-section,
+  .featured-post-card,
+  .search-main,
+  .quick-filters,
+  .post-card,
+  .loading-card,
+  .empty-state,
+  .error-state,
+  .pagination-section,
+  .sidebar-section {
+    animation: none;
+  }
+
+  .featured-post-card:hover,
+  .category-filter:hover,
+  .layout-btn,
+  .active-filter,
+  .clear-filters-btn,
+  .empty-action,
+  .error-retry {
+    @apply transform-none;
+  }
+
+  .featured-image img,
+  .author-avatar {
+    @apply transition-none;
+  }
+}
+
+/* Focus visible para mejor accesibilidad */
+.category-filter:focus-visible,
+.layout-btn:focus-visible,
+.clear-filters-btn:focus-visible,
+.empty-action:focus-visible,
+.error-retry:focus-visible,
+.featured-cta:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+/* Estados de alta contraste */
+@media (prefers-contrast: high) {
+  .featured-post-card {
+    @apply border-2 border-white;
+  }
+
+  .filter-active {
+    @apply bg-black dark:bg-white text-white dark:text-black;
+    @apply border-black dark:border-white;
+  }
+
+  .layout-active {
+    @apply bg-black dark:bg-white text-white dark:text-black;
+  }
+
+  .active-filter {
+    @apply border-2 border-current;
+  }
+}
+
+/* Print styles */
+@media print {
+  .search-filters-section,
+  .sidebar-section,
+  .pagination-section {
+    @apply hidden;
+  }
+
+  .hero-section {
+    @apply py-4;
+  }
+
+  .featured-post-card {
+    @apply shadow-none border border-gray-400;
+  }
+
+  .posts-grid {
+    @apply grid-cols-1 gap-4;
+  }
+}
+
+/* Mejoras de performance */
+.hero-section,
+.featured-post-card,
+.posts-grid,
+.loading-grid {
+  contain: layout style paint;
+  will-change: transform, opacity;
+}
+
+.post-card {
+  will-change: transform;
+}
+
+.featured-image img {
+  will-change: transform;
+}
+
+/* Utilidades específicas del componente */
+.posts-masonry {
+  column-fill: balance;
+}
+
+.featured-gradient {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600;
+}
+
+.hero-pattern {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.1) 1px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+}
+
+/* Efectos especiales */
+.featured-post-card::after {
+  content: "";
+  @apply absolute inset-0 rounded-2xl;
+  @apply bg-gradient-to-r from-blue-600/20 to-purple-600/20;
+  @apply opacity-0 transition-opacity duration-500;
+  @apply pointer-events-none;
+}
+
+.featured-post-card:hover::after {
+  @apply opacity-100;
+}
+
+/* Grid auto-fit para responsive avanzado */
+.posts-grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .posts-grid-auto {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Scroll suave para anclas */
+.blog-list-container {
+  scroll-behavior: smooth;
+}
+
+/* Indicadores de carga específicos */
+.loading-indicator {
+  @apply relative overflow-hidden;
+}
+
+.loading-indicator::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-blue-200 to-transparent;
+  @apply dark:via-blue-800;
+  @apply transform -skew-x-12 -translate-x-full;
+  @apply transition-transform duration-1000;
+  animation: skeletonShimmer 2s infinite;
+}
+
+/* Estilos para estados específicos */
+.blog-list-filtered .hero-section {
+  @apply hidden;
+}
+
+.blog-list-searching .posts-grid {
+  @apply opacity-50;
+}
+
+.blog-list-loading .main-content {
+  @apply pointer-events-none;
+}

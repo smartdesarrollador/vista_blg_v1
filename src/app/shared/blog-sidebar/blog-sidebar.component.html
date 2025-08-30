@@ -1,0 +1,444 @@
+<!-- Blog Sidebar Container -->
+<aside
+  [class]="sidebarClasses()"
+  role="complementary"
+  aria-label="Barra lateral del blog"
+>
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="animate-pulse space-y-6">
+    @for (item of [1,2,3,4]; track $index) {
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+    >
+      <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+      <div class="space-y-2">
+        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+      </div>
+    </div>
+    }
+  </div>
+  } @else if (error()) {
+  <!-- Error State -->
+  <div
+    class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4"
+  >
+    <div class="flex items-center">
+      <svg
+        class="w-5 h-5 text-red-400 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <p class="text-sm text-red-700 dark:text-red-400">{{ error() }}</p>
+    </div>
+  </div>
+  } @else {
+
+  <!-- Widget: Posts Populares -->
+  @if (finalConfig().popularPosts.enabled && popularPosts().length > 0) {
+  <div
+    class="widget popular-posts bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200"
+  >
+    <div class="flex items-center mb-4">
+      <svg
+        class="w-5 h-5 text-orange-500 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+        ></path>
+      </svg>
+      <h3 class="font-semibold text-gray-900 dark:text-white">
+        Posts Populares
+      </h3>
+    </div>
+
+    <ul class="space-y-4" role="list">
+      @for (post of popularPosts(); track trackByPost($index, post)) {
+      <li>
+        <article class="group cursor-pointer" (click)="onPostClick(post)">
+          <div class="flex items-start space-x-3">
+            <!-- Thumbnail -->
+            @if (finalConfig().popularPosts.showThumbnails) {
+            <div
+              class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700"
+            >
+              <img
+                [src]="post.featuredImage"
+                [alt]="post.featuredImageAlt"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+            }
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <h4
+                class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2"
+              >
+                <a [routerLink]="['/blog', post.slug]" class="hover:underline">
+                  {{ truncateText(post.title, 60) }}
+                </a>
+              </h4>
+
+              <!-- Meta Info -->
+              <div
+                class="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1 space-x-3"
+              >
+                @if (finalConfig().popularPosts.showDate && post.publishedAt) {
+                <time [dateTime]="post.publishedAt.toISOString()">
+                  {{ formatDate(post.publishedAt) }}
+                </time>
+                } @if (finalConfig().popularPosts.showViews) {
+                <span class="flex items-center">
+                  <svg
+                    class="w-3 h-3 mr-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                  >
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                    <path
+                      fill-rule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  {{ formatNumber(post.views) }}
+                </span>
+                }
+              </div>
+            </div>
+          </div>
+        </article>
+      </li>
+      }
+    </ul>
+  </div>
+  }
+
+  <!-- Widget: Categorías -->
+  @if (finalConfig().categories.enabled && categories().length > 0) {
+  <div
+    class="widget categories bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200"
+  >
+    <div class="flex items-center mb-4">
+      <svg
+        class="w-5 h-5 text-blue-500 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+        ></path>
+      </svg>
+      <h3 class="font-semibold text-gray-900 dark:text-white">Categorías</h3>
+    </div>
+
+    <ul class="space-y-2" role="list">
+      @for (category of categories(); track trackByCategory($index, category)) {
+      <li>
+        <button
+          type="button"
+          (click)="onCategoryClick(category)"
+          class="w-full flex items-center justify-between p-2 text-left rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 group"
+          [attr.aria-label]="'Ver posts de ' + category.name"
+        >
+          <div class="flex items-center space-x-3">
+            @if (finalConfig().categories.showIcons && category.icon) {
+            <span class="text-lg" [attr.aria-hidden]="true">{{
+              getCategoryIcon(category)
+            }}</span>
+            }
+            <span
+              class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
+            >
+              {{ category.name }}
+            </span>
+          </div>
+          @if (finalConfig().categories.showCounts) {
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded-full"
+          >
+            {{ category.postsCount }}
+          </span>
+          }
+        </button>
+      </li>
+      }
+    </ul>
+  </div>
+  }
+
+  <!-- Widget: Nube de Tags -->
+  @if (finalConfig().tags.enabled && tagCloud().length > 0) {
+  <div
+    class="widget tags bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200"
+  >
+    <div class="flex items-center mb-4">
+      <svg
+        class="w-5 h-5 text-green-500 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <h3 class="font-semibold text-gray-900 dark:text-white">
+        Tags Populares
+      </h3>
+    </div>
+
+    @if (finalConfig().tags.showAsCloud) {
+    <!-- Tag Cloud -->
+    <div class="flex flex-wrap gap-2">
+      @for (tag of tagCloud(); track trackByTag($index, tag)) {
+      <button
+        type="button"
+        (click)="onTagClick(tag.name)"
+        class="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
+        [style.font-size]="getTagFontSize(tag)"
+        [attr.aria-label]="'Ver posts con tag ' + tag.name"
+      >
+        #{{ tag.name }}
+      </button>
+      }
+    </div>
+    } @else {
+    <!-- Tag List -->
+    <ul class="space-y-1" role="list">
+      @for (tag of tagCloud(); track trackByTag($index, tag)) {
+      <li>
+        <button
+          type="button"
+          (click)="onTagClick(tag.name)"
+          class="w-full text-left p-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors duration-200"
+          [attr.aria-label]="'Ver posts con tag ' + tag.name"
+        >
+          #{{ tag.name }}
+        </button>
+      </li>
+      }
+    </ul>
+    }
+  </div>
+  }
+
+  <!-- Widget: Acerca del Autor -->
+  @if (finalConfig().aboutAuthor.enabled && featuredAuthor) {
+  <div
+    class="widget about-author bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-200"
+  >
+    <div class="flex items-center mb-4">
+      <svg
+        class="w-5 h-5 text-purple-500 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <h3 class="font-semibold text-gray-900 dark:text-white">
+        Acerca del Autor
+      </h3>
+    </div>
+
+    <div class="text-center">
+      <!-- Avatar -->
+      <button
+        type="button"
+        (click)="onAuthorClick()"
+        class="mx-auto mb-4 block hover:opacity-80 transition-opacity duration-200"
+        [attr.aria-label]="'Ver perfil de ' + featuredAuthor.name"
+      >
+        <img
+          [src]="featuredAuthor.avatar"
+          [alt]="'Avatar de ' + featuredAuthor.name"
+          class="w-20 h-20 rounded-full object-cover mx-auto border-4 border-white dark:border-gray-700 shadow-lg"
+          loading="lazy"
+        />
+      </button>
+
+      <!-- Name -->
+      <h4 class="font-semibold text-lg text-gray-900 dark:text-white mb-2">
+        {{ featuredAuthor.name }}
+      </h4>
+
+      <!-- Bio -->
+      @if (finalConfig().aboutAuthor.showBio) {
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
+        {{ truncateText(featuredAuthor.bio, 120) }}
+      </p>
+      }
+
+      <!-- Stats -->
+      @if (finalConfig().aboutAuthor.showStats && (featuredAuthor.postsCount ||
+      featuredAuthor.totalViews)) {
+      <div class="grid grid-cols-2 gap-4 mb-4 text-center">
+        @if (featuredAuthor.postsCount) {
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+          <div class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ featuredAuthor.postsCount }}
+          </div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Posts</div>
+        </div>
+        } @if (featuredAuthor.totalViews) {
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+          <div class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ formatNumber(featuredAuthor.totalViews) }}
+          </div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Views</div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Social Links -->
+      @if (finalConfig().aboutAuthor.showSocialLinks &&
+      featuredAuthor.socialLinks) {
+      <div class="flex justify-center space-x-3">
+        @if (featuredAuthor.socialLinks.website) {
+        <a
+          [href]="featuredAuthor.socialLinks.website"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 hover:text-blue-500 transition-colors duration-200"
+          aria-label="Sitio web del autor"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118C6.004 2.42 4.043 4.44 4.083 9zM10 2C5.582 2 2 5.582 2 10s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8zm0 2c-.424 0-.849.115-1.235.344-.654.388-1.357 1.192-1.905 2.656H10V4zm0 3H6.755c.264-1.463.724-2.677 1.275-3.344C8.466 3.33 9.196 3 10 3v4zm0 2H4.083c0-.424.115-.849.344-1.235.388-.654 1.192-1.357 2.656-1.905H10V9zm0 2H6.755c.264 1.463.724 2.677 1.275 3.344C8.466 14.67 9.196 15 10 15v-4zm0 3h2.905c.264-1.463.724-2.677 1.275-3.344C14.534 10.33 13.804 10 13 10H10v3zm0-2h3.245c-.264 1.463-.724 2.677-1.275 3.344C11.534 13.67 10.804 14 10 14v-3zm0-2h5.917c0 .424-.115.849-.344 1.235-.388.654-1.192 1.357-2.656 1.905H10V9zm0-2h3.245c-.264-1.463-.724-2.677-1.275-3.344C11.534 6.33 10.804 6 10 6v3zm0-2c.424 0 .849-.115 1.235-.344.654-.388 1.357-1.192 1.905-2.656H10V4zm5.917 9c-.089 1.546-.383 2.97-.837 4.118C15.996 15.58 15.957 13.56 15.917 9z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </a>
+        } @if (featuredAuthor.socialLinks.twitter) {
+        <a
+          [href]="featuredAuthor.socialLinks.twitter"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 hover:text-blue-400 transition-colors duration-200"
+          aria-label="Twitter del autor"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84"
+            ></path>
+          </svg>
+        </a>
+        } @if (featuredAuthor.socialLinks.linkedin) {
+        <a
+          [href]="featuredAuthor.socialLinks.linkedin"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 hover:text-blue-600 transition-colors duration-200"
+          aria-label="LinkedIn del autor"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </a>
+        } @if (featuredAuthor.socialLinks.github) {
+        <a
+          [href]="featuredAuthor.socialLinks.github"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+          aria-label="GitHub del autor"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </a>
+        }
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Widget: Newsletter -->
+  @if (finalConfig().newsletter.enabled) {
+  <div
+    class="widget newsletter bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg p-6 text-white shadow-lg"
+  >
+    <div class="flex items-center mb-4">
+      <svg
+        class="w-5 h-5 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+      >
+        <path
+          d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+        ></path>
+        <path
+          d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+        ></path>
+      </svg>
+      <h3 class="font-semibold">Newsletter</h3>
+    </div>
+
+    @if (finalConfig().newsletter.showDescription) {
+    <p class="text-sm mb-4 text-blue-100">
+      Recibe los últimos artículos de tecnología y desarrollo directamente en tu
+      bandeja de entrada.
+    </p>
+    }
+
+    <form
+      class="space-y-3"
+      (ngSubmit)="onNewsletterSubmit(emailInput.value)"
+      #newsletterForm="ngForm"
+    >
+      <div>
+        <label for="newsletter-email" class="sr-only">Email</label>
+        <input
+          #emailInput
+          type="email"
+          id="newsletter-email"
+          name="email"
+          required
+          placeholder="tu@email.com"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg placeholder-white/70 text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
+        />
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-white text-blue-600 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+        [disabled]="!newsletterForm.valid"
+      >
+        Suscribirse
+      </button>
+    </form>
+  </div>
+  } }
+</aside>

@@ -1,0 +1,408 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div
+    class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-200"
+  >
+    <div>
+      <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900">
+        Crear una cuenta
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        ¿Ya tienes una cuenta?
+        <a
+          routerLink="/auth/login"
+          class="font-medium text-indigo-600 hover:text-indigo-500"
+        >
+          Inicia sesión
+        </a>
+      </p>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div
+      *ngIf="errorMessage"
+      class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md"
+      role="alert"
+    >
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <form
+      class="mt-6 space-y-6"
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <div class="space-y-5">
+        <!-- Nombre -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1"
+            >Nombre completo</label
+          >
+          <input
+            id="name"
+            name="name"
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+            required
+            class="appearance-none block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="Tu nombre completo"
+          />
+          <div
+            *ngIf="
+              nameControl?.invalid &&
+              (nameControl?.dirty || nameControl?.touched)
+            "
+            class="text-xs text-red-500 mt-2 ml-1"
+          >
+            <div *ngIf="nameControl?.errors?.['required']">
+              El nombre es obligatorio.
+            </div>
+            <div *ngIf="nameControl?.errors?.['minlength']">
+              El nombre debe tener al menos 3 caracteres.
+            </div>
+          </div>
+        </div>
+
+        <!-- Correo electrónico -->
+        <div>
+          <label
+            for="email"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Correo electrónico</label
+          >
+          <input
+            id="email"
+            name="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            required
+            class="appearance-none block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="tu.correo@ejemplo.com"
+          />
+          <div
+            *ngIf="
+              emailControl?.invalid &&
+              (emailControl?.dirty || emailControl?.touched)
+            "
+            class="text-xs text-red-500 mt-2 ml-1"
+          >
+            <div *ngIf="emailControl?.errors?.['required']">
+              El correo electrónico es obligatorio.
+            </div>
+            <div *ngIf="emailControl?.errors?.['email']">
+              Ingresa un correo electrónico válido.
+            </div>
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="relative">
+          <label
+            for="password"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Contraseña</label
+          >
+          <input
+            id="password"
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+            required
+            class="appearance-none block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="********"
+          />
+          <button
+            type="button"
+            class="absolute right-0 top-8 pr-3 flex items-center text-sm leading-5"
+            (click)="togglePasswordVisibility()"
+          >
+            <svg
+              *ngIf="!showPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <svg
+              *ngIf="showPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+              />
+            </svg>
+          </button>
+          <div
+            *ngIf="
+              passwordControl?.invalid &&
+              (passwordControl?.dirty || passwordControl?.touched)
+            "
+            class="text-xs text-red-500 mt-2 ml-1"
+          >
+            <div *ngIf="passwordControl?.errors?.['required']">
+              La contraseña es obligatoria.
+            </div>
+            <div *ngIf="passwordControl?.errors?.['minlength']">
+              La contraseña debe tener al menos 8 caracteres.
+            </div>
+            <div *ngIf="passwordControl?.errors?.['pattern']">
+              La contraseña debe incluir mayúsculas, minúsculas, números y
+              caracteres especiales.
+            </div>
+          </div>
+          <p class="mt-1 text-xs text-gray-500">
+            Debe contener al menos 8 caracteres, una mayúscula, una minúscula,
+            un número y un caracter especial
+          </p>
+        </div>
+
+        <!-- Confirmar contraseña -->
+        <div class="relative">
+          <label
+            for="password_confirmation"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Confirmar contraseña</label
+          >
+          <input
+            id="password_confirmation"
+            name="password_confirmation"
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="password_confirmation"
+            autocomplete="new-password"
+            required
+            class="appearance-none block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="********"
+          />
+          <button
+            type="button"
+            class="absolute right-0 top-8 pr-3 flex items-center text-sm leading-5"
+            (click)="toggleConfirmPasswordVisibility()"
+          >
+            <svg
+              *ngIf="!showConfirmPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <svg
+              *ngIf="showConfirmPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+              />
+            </svg>
+          </button>
+          <div
+            *ngIf="
+              passwordConfirmationControl?.invalid &&
+              (passwordConfirmationControl?.dirty ||
+                passwordConfirmationControl?.touched)
+            "
+            class="text-xs text-red-500 mt-2 ml-1"
+          >
+            <div *ngIf="passwordConfirmationControl?.errors?.['required']">
+              Confirma tu contraseña.
+            </div>
+            <div
+              *ngIf="passwordConfirmationControl?.errors?.['passwordMismatch']"
+            >
+              Las contraseñas no coinciden.
+            </div>
+          </div>
+        </div>
+
+        <!-- Rol -->
+        <!-- <div>
+          <label for="rol" class="block text-sm font-medium text-gray-700 mb-1"
+            >Rol</label
+          >
+          <select
+            id="rol"
+            name="rol"
+            formControlName="rol"
+            class="appearance-none block w-full px-3 py-2.5 border border-gray-300 text-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option value="autor">Autor</option>
+            <option value="administrador">Administrador</option>
+          </select>
+          <div
+            *ngIf="
+              rolControl?.invalid && (rolControl?.dirty || rolControl?.touched)
+            "
+            class="text-xs text-red-500 mt-2 ml-1"
+          >
+            <div *ngIf="rolControl?.errors?.['required']">
+              El rol es obligatorio.
+            </div>
+          </div>
+        </div> -->
+        <!-- Rol (campo oculto) -->
+        <input type="hidden" formControlName="rol" />
+      </div>
+
+      <div class="mt-8">
+        <button
+          type="submit"
+          [disabled]="isLoading || registerForm.invalid"
+          class="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors duration-200"
+        >
+          <span
+            *ngIf="isLoading"
+            class="absolute left-0 inset-y-0 flex items-center pl-3"
+          >
+            <svg
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </span>
+          <span
+            *ngIf="!isLoading"
+            class="absolute left-0 inset-y-0 flex items-center pl-3"
+          >
+            <svg
+              class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </span>
+          {{ isLoading ? "Registrando..." : "Registrarse" }}
+        </button>
+      </div>
+      <!-- Separador con texto "o" -->
+      <div class="relative mt-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white text-gray-500">o regístrate con</span>
+        </div>
+      </div>
+
+      <!-- Botones de redes sociales -->
+      <div class="mt-6 grid grid-cols-2 gap-3">
+        <!-- Botón de Google -->
+        <button
+          type="button"
+          class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+        >
+          <svg
+            class="h-5 w-5 mr-2"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
+              <path
+                fill="#4285F4"
+                d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"
+              />
+              <path
+                fill="#34A853"
+                d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"
+              />
+              <path
+                fill="#EA4335"
+                d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"
+              />
+            </g>
+          </svg>
+          <span>Google</span>
+        </button>
+
+        <!-- Botón de Facebook -->
+        <button
+          type="button"
+          class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+        >
+          <svg
+            class="h-5 w-5 mr-2"
+            fill="#1877F2"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M23.9981 11.9991C23.9981 5.37216 18.626 0 11.9991 0C5.37216 0 0 5.37216 0 11.9991C0 17.9882 4.38789 22.9522 10.1242 23.8524V15.4676H7.07758V11.9991H10.1242V9.35553C10.1242 6.34826 11.9156 4.68714 14.6564 4.68714C15.9692 4.68714 17.3424 4.92149 17.3424 4.92149V7.87439H15.8294C14.3388 7.87439 13.8739 8.79933 13.8739 9.74824V11.9991H17.2018L16.6698 15.4676H13.8739V23.8524C19.6103 22.9522 23.9981 17.9882 23.9981 11.9991Z"
+            />
+          </svg>
+          <span>Facebook</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

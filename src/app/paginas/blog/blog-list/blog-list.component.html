@@ -1,0 +1,568 @@
+<!-- ===== BLOG LIST PAGE ===== -->
+<div class="blog-list-container min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- Breadcrumbs -->
+  <div
+    class="breadcrumb-section bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-4"
+  >
+    <div class="container mx-auto px-4">
+      <app-breadcrumb></app-breadcrumb>
+    </div>
+  </div>
+
+  <!-- Hero Section con Post Destacado -->
+  <section
+    *ngIf="config().showHeroSection && featuredPost() && !hasActiveFilters()"
+    class="hero-section bg-white dark:bg-gray-800 py-12 border-b border-gray-200 dark:border-gray-700"
+  >
+    <div class="container mx-auto px-4">
+      <div class="hero-content max-w-6xl mx-auto">
+        <!-- Header del Hero -->
+        <div class="hero-header text-center mb-8">
+          <h1
+            class="hero-title text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+          >
+            Últimos Artículos
+          </h1>
+          <p
+            class="hero-subtitle text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
+          >
+            Descubre contenido de calidad sobre desarrollo web, programación y
+            las últimas tendencias tecnológicas
+          </p>
+        </div>
+
+        <!-- Featured Post Card -->
+        <div
+          class="featured-post-card bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl overflow-hidden shadow-2xl"
+        >
+          <div class="featured-content grid lg:grid-cols-2 gap-0">
+            <!-- Imagen del post destacado -->
+            <div class="featured-image relative overflow-hidden lg:order-2">
+              <img
+                [ngSrc]="featuredPost()!.featuredImage"
+                [alt]="featuredPost()!.title"
+                class="w-full h-64 lg:h-full object-cover transition-transform duration-700 hover:scale-105"
+                width="600"
+                height="400"
+                priority
+              />
+              <div
+                class="featured-overlay absolute inset-0 bg-gradient-to-t from-black/50 to-transparent lg:hidden"
+              ></div>
+            </div>
+
+            <!-- Contenido del post destacado -->
+            <div
+              class="featured-text p-8 lg:p-12 text-white relative lg:order-1"
+            >
+              <div class="featured-meta flex items-center space-x-4 mb-4">
+                <span
+                  class="badge bg-white/20 backdrop-blur text-white px-3 py-1 rounded-full text-sm font-medium"
+                >
+                  Destacado
+                </span>
+                <span class="text-white/80 text-sm">
+                  {{ featuredPost()!.publishedAt | date : "mediumDate" : "es" }}
+                </span>
+              </div>
+
+              <h2
+                class="featured-title text-2xl lg:text-3xl xl:text-4xl font-bold mb-4 leading-tight"
+              >
+                {{ featuredPost()!.title }}
+              </h2>
+
+              <p
+                class="featured-excerpt text-white/90 text-lg mb-6 line-clamp-3"
+              >
+                {{ featuredPost()!.excerpt }}
+              </p>
+
+              <!-- Author y metadata -->
+              <div class="featured-author flex items-center justify-between">
+                <div class="author-info flex items-center space-x-3">
+                  <img
+                    [src]="featuredPost()!.author?.avatar || '/assets/images/default-avatar.jpg'"
+                    [alt]="featuredPost()!.author?.name || 'Autor'"
+                    class="author-avatar w-10 h-10 rounded-full border-2 border-white/20"
+                  />
+                  <div class="author-details">
+                    <p class="author-name text-white font-medium text-sm">
+                      {{ featuredPost()!.author?.name || 'Autor desconocido' }}
+                    </p>
+                    <p class="reading-time text-white/70 text-xs">
+                      {{ featuredPost()!.readingTime }} min de lectura
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="onPostClick(featuredPost()!)"
+                  class="featured-cta bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 transition-all duration-200 transform hover:scale-105"
+                >
+                  Leer Artículo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Búsqueda y Filtros -->
+  <section
+    *ngIf="config().showFilters"
+    class="search-filters-section bg-white dark:bg-gray-800 py-6 border-b border-gray-200 dark:border-gray-700"
+  >
+    <div class="container mx-auto px-4">
+      <div class="search-filters-content max-w-6xl mx-auto">
+        <!-- Barra de búsqueda principal -->
+        <div class="search-main mb-6">
+          <app-blog-search
+            [config]="{
+              placeholder: 'Buscar artículos, categorías, tags...',
+              showAdvancedFilters: true,
+              enableHistory: true,
+              maxSuggestions: 6
+            }"
+            (searchPerformed)="onSearchPerformed($event)"
+            (filterChanged)="onFilterChanged($event)"
+          >
+          </app-blog-search>
+        </div>
+
+        <!-- Filtros rápidos y ordenamiento -->
+        <div
+          class="quick-filters flex flex-wrap items-center justify-between gap-4"
+        >
+          <!-- Filtros por categoría -->
+          <div class="filter-categories flex flex-wrap items-center gap-2">
+            <span
+              class="filter-label text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Categorías:
+            </span>
+            <button
+              *ngFor="
+                let category of categories().slice(0, 5);
+                trackBy: trackByCategory
+              "
+              type="button"
+              (click)="onCategoryDirectClick(category.id)"
+              class="category-filter px-3 py-1 text-sm rounded-full border transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.filter-active]="filters().categoryIds?.includes(category.id)"
+              [class.filter-inactive]="
+                !filters().categoryIds?.includes(category.id)
+              "
+            >
+              {{ category.name }}
+              <span class="ml-1 text-xs opacity-75"
+                >({{ category.postsCount }})</span
+              >
+            </button>
+          </div>
+
+          <!-- Controles de vista y ordenamiento -->
+          <div class="view-controls flex items-center space-x-4">
+            <!-- Selector de ordenamiento -->
+            <div class="sort-selector">
+              <label for="sort-select" class="sr-only">Ordenar por</label>
+              <select
+                id="sort-select"
+                [value]="filters().sortBy"
+                (change)="onSortChanged($any($event.target).value)"
+                class="sort-select text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option
+                  *ngFor="let option of sortOptions"
+                  [value]="option.value"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Layout selector -->
+            <div
+              class="layout-selector flex items-center space-x-1 border border-gray-300 dark:border-gray-600 rounded-md p-1"
+            >
+              <button
+                *ngFor="let layout of ['grid', 'list', 'masonry']"
+                type="button"
+                (click)="setLayoutMode(layout)"
+                class="layout-btn p-2 rounded transition-all duration-200"
+                [class.layout-active]="config().gridLayout === layout"
+                [class.layout-inactive]="config().gridLayout !== layout"
+                [attr.aria-label]="'Vista en ' + layout"
+              >
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    *ngIf="layout === 'grid'"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
+                  <path
+                    *ngIf="layout === 'list'"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                  />
+                  <path
+                    *ngIf="layout === 'masonry'"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtros activos -->
+        <div
+          *ngIf="activeFilters().totalActive > 0"
+          class="active-filters-bar mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
+        >
+          <div
+            class="active-filters-content flex flex-wrap items-center justify-between gap-2"
+          >
+            <div class="active-filters-list flex flex-wrap items-center gap-2">
+              <span
+                class="text-sm font-medium text-blue-800 dark:text-blue-200"
+              >
+                Filtros activos ({{ activeFilters().totalActive }}):
+              </span>
+
+              <!-- Filtro de búsqueda -->
+              <span
+                *ngIf="filters().searchQuery"
+                class="active-filter bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm flex items-center space-x-1"
+              >
+                <span>Búsqueda: "{{ filters().searchQuery }}"</span>
+                <button
+                  type="button"
+                  (click)="onFilterChanged({ searchQuery: '' })"
+                  class="ml-1 hover:text-blue-600 dark:hover:text-blue-300"
+                >
+                  <svg
+                    class="h-3 w-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </span>
+
+              <!-- Active Category Filters -->
+              @for (categoryId of filters().categoryIds; track categoryId) {
+              <span class="active-filter category-filter">
+                <span>{{ getCategoryName(categoryId) }}</span>
+                <button
+                  type="button"
+                  (click)="removeCategoryFilter(categoryId)"
+                  class="remove-filter-btn"
+                >
+                  <svg
+                    class="h-3 w-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </span>
+              }
+
+              <!-- Active Tag Filters -->
+              @for (tag of filters().tags; track tag) {
+              <span class="active-filter tag-filter">
+                <span>{{ tag }}</span>
+                <button
+                  type="button"
+                  (click)="removeTagFilter(tag)"
+                  class="remove-filter-btn"
+                >
+                  <svg
+                    class="h-3 w-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </span>
+              }
+            </div>
+
+            <button
+              type="button"
+              (click)="clearAllFilters()"
+              class="clear-filters-btn text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium px-3 py-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            >
+              Limpiar todo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido Principal -->
+  <main class="main-content py-8">
+    <div class="container mx-auto px-4">
+      <div class="content-wrapper max-w-7xl mx-auto">
+        <div class="content-grid" [class.with-sidebar]="config().showSidebar">
+          <!-- Posts Grid/List -->
+          <div class="posts-section">
+            <!-- Header de resultados -->
+            <div
+              *ngIf="!isLoading()"
+              class="results-header flex items-center justify-between mb-6"
+            >
+              <div class="results-info">
+                <h2
+                  class="results-title text-2xl font-bold text-gray-900 dark:text-gray-100"
+                >
+                  <span *ngIf="!hasActiveFilters()">Todos los Artículos</span>
+                  <span *ngIf="filters().searchQuery"
+                    >Resultados para "{{ filters().searchQuery }}"</span
+                  >
+                  <span *ngIf="!filters().searchQuery && hasActiveFilters()"
+                    >Artículos Filtrados</span
+                  >
+                </h2>
+                <p class="results-count text-gray-600 dark:text-gray-400 mt-1">
+                  {{ paginationInfo().totalItems }}
+                  {{
+                    paginationInfo().totalItems === 1 ? "artículo" : "artículos"
+                  }}
+                  <span *ngIf="paginationInfo().totalPages > 1">
+                    • Página {{ paginationInfo().currentPage }} de
+                    {{ paginationInfo().totalPages }}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <!-- Estados de carga -->
+            <div *ngIf="isLoading()" class="loading-state">
+              <div class="loading-grid" [ngClass]="layoutClasses()">
+                <div
+                  *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+                  class="loading-card animate-pulse"
+                >
+                  <div
+                    class="card-skeleton bg-gray-200 dark:bg-gray-700 rounded-lg p-6"
+                  >
+                    <div
+                      class="skeleton-image bg-gray-300 dark:bg-gray-600 h-48 rounded-lg mb-4"
+                    ></div>
+                    <div class="skeleton-content space-y-3">
+                      <div
+                        class="skeleton-title bg-gray-300 dark:bg-gray-600 h-6 rounded w-3/4"
+                      ></div>
+                      <div class="skeleton-excerpt space-y-2">
+                        <div
+                          class="bg-gray-300 dark:bg-gray-600 h-4 rounded w-full"
+                        ></div>
+                        <div
+                          class="bg-gray-300 dark:bg-gray-600 h-4 rounded w-2/3"
+                        ></div>
+                      </div>
+                      <div class="skeleton-meta flex items-center space-x-4">
+                        <div
+                          class="bg-gray-300 dark:bg-gray-600 h-8 w-8 rounded-full"
+                        ></div>
+                        <div
+                          class="bg-gray-300 dark:bg-gray-600 h-4 rounded w-1/3"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid de Posts -->
+            <div
+              *ngIf="!isLoading() && hasResults()"
+              class="posts-grid"
+              [ngClass]="layoutClasses()"
+            >
+              <app-blog-card
+                *ngFor="let post of currentPosts(); trackBy: trackByPost"
+                [post]="post"
+                (cardClick)="onPostClick($event)"
+                (categoryClick)="onCategoryClick($event)"
+                (tagClick)="onTagClick($event)"
+                class="post-card"
+              >
+              </app-blog-card>
+            </div>
+
+            <!-- Estado vacío -->
+            <div *ngIf="isEmpty()" class="empty-state text-center py-16">
+              <div class="empty-content max-w-md mx-auto">
+                <div class="empty-icon mb-6">
+                  <svg
+                    class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                </div>
+                <h3
+                  class="empty-title text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2"
+                >
+                  No se encontraron artículos
+                </h3>
+                <p
+                  class="empty-description text-gray-600 dark:text-gray-400 mb-6"
+                >
+                  <span *ngIf="hasActiveFilters()">
+                    No hay artículos que coincidan con los filtros
+                    seleccionados.
+                  </span>
+                  <span *ngIf="!hasActiveFilters()">
+                    Aún no hay artículos publicados.
+                  </span>
+                </p>
+                <button
+                  *ngIf="hasActiveFilters()"
+                  type="button"
+                  (click)="clearAllFilters()"
+                  class="empty-action bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                >
+                  Ver todos los artículos
+                </button>
+              </div>
+            </div>
+
+            <!-- Estado de error -->
+            <div *ngIf="hasError()" class="error-state text-center py-16">
+              <div class="error-content max-w-md mx-auto">
+                <div class="error-icon mb-6">
+                  <svg
+                    class="mx-auto h-16 w-16 text-red-400 dark:text-red-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3
+                  class="error-title text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2"
+                >
+                  Error al cargar los artículos
+                </h3>
+                <p
+                  class="error-description text-gray-600 dark:text-gray-400 mb-6"
+                >
+                  {{
+                    blogState().errorMessage ||
+                      "Ha ocurrido un error inesperado."
+                  }}
+                </p>
+                <button
+                  type="button"
+                  (click)="retryLoading()"
+                  class="error-retry bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                >
+                  Intentar de nuevo
+                </button>
+              </div>
+            </div>
+
+            <!-- Paginación -->
+            <div
+              *ngIf="
+                !isLoading() && hasResults() && paginationInfo().totalPages > 1
+              "
+              class="pagination-section mt-12 pt-8 border-t border-gray-200 dark:border-gray-700"
+            >
+              <app-blog-pagination
+                [pagination]="{
+                  currentPage: paginationInfo().currentPage,
+                  totalPages: paginationInfo().totalPages,
+                  totalItems: paginationInfo().totalItems,
+                  itemsPerPage: paginationInfo().itemsPerPage,
+                  hasPrevious: paginationInfo().hasPrevPage,
+                  hasNext: paginationInfo().hasNextPage
+                }"
+                [config]="{
+                  type: config().paginationType,
+                  showInfo: true,
+                  showJumpTo: true
+                }"
+                (pageChanged)="onPageChanged($any($event))"
+                (loadMore)="onLoadMore()"
+              >
+              </app-blog-pagination>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside *ngIf="config().showSidebar" class="sidebar-section">
+            <div class="sidebar-sticky sticky top-8">
+              <app-blog-sidebar
+                [config]="{
+                  popularPosts: { enabled: true, limit: 5, showThumbnails: true, showDate: true, showViews: true },
+                  categories: { enabled: true, limit: 8, showCounts: true, showIcons: true, hierarchical: false },
+                  tags: { enabled: true, limit: 15, showAsCloud: true, minFontSize: 12, maxFontSize: 18 }
+                }"
+                (postClick)="onPostClick($event)"
+                (categoryClick)="onSidebarCategoryClick($event)"
+                (tagClick)="onSidebarTagClick($event)"
+              >
+              </app-blog-sidebar>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

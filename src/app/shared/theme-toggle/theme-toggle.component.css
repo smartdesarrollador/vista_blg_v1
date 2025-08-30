@@ -1,0 +1,593 @@
+/* ============================================
+   Theme Toggle Component Styles
+   ============================================ */
+
+/* Base Container */
+.theme-toggle {
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Button Variants */
+
+/* Base Button */
+.theme-toggle-btn {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #374151;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .theme-toggle-btn {
+  border-color: #4b5563;
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
+.theme-toggle-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.dark .theme-toggle-btn:hover {
+  background: #374151;
+  border-color: #6b7280;
+}
+
+.theme-toggle-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Size Variants */
+.size-sm .theme-toggle-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.size-sm .theme-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.size-md .theme-toggle-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.size-md .theme-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.size-lg .theme-toggle-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.size-lg .theme-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Mini Variant */
+.variant-mini .theme-toggle-btn {
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+/* Icon Animations */
+.theme-icon {
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-btn:hover .theme-icon {
+  transform: scale(1.1);
+}
+
+.is-changing .theme-icon {
+  animation: rotateIcon 1s ease-in-out;
+}
+
+@keyframes rotateIcon {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dropdown Styles */
+.dropdown-content {
+  animation: dropdownOpen 0.2s ease-out;
+  transform-origin: top;
+}
+
+@keyframes dropdownOpen {
+  from {
+    opacity: 0;
+    transform: scaleY(0.8) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+  }
+}
+
+/* Dropdown Positioning */
+.dropdown-left {
+  left: 0;
+}
+
+.dropdown-right {
+  right: 0;
+}
+
+.dropdown-center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Theme Options */
+.theme-option {
+  border: 1px solid transparent;
+}
+
+.theme-option:hover {
+  background: #f3f4f6;
+}
+
+.dark .theme-option:hover {
+  background: #4b5563;
+}
+
+.theme-option.active {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.dark .theme-option.active {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+  color: #dbeafe;
+}
+
+/* Color Scheme Options */
+.color-scheme-option {
+  border: 1px solid transparent;
+}
+
+.color-scheme-option:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.dark .color-scheme-option:hover {
+  background: #4b5563;
+  border-color: #6b7280;
+}
+
+.color-scheme-option.active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.dark .color-scheme-option.active {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+}
+
+.color-preview {
+  border-color: #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.dark .color-preview {
+  border-color: #4b5563;
+}
+
+/* Font Size Options */
+.font-size-btn {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.dark .font-size-btn {
+  border-color: #4b5563;
+  background: #374151;
+  color: #9ca3af;
+}
+
+.font-size-btn:hover {
+  border-color: #9ca3af;
+  background: #f3f4f6;
+}
+
+.dark .font-size-btn:hover {
+  border-color: #6b7280;
+  background: #4b5563;
+}
+
+.font-size-btn.active {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+/* Toggle Switches */
+.toggle-switch,
+.preference-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: #d1d5db;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.dark .toggle-switch,
+.dark .preference-switch {
+  background: #4b5563;
+}
+
+.toggle-switch::before,
+.preference-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.toggle-input:checked + .toggle-switch,
+.preference-input:checked + .preference-switch {
+  background: #3b82f6;
+}
+
+.toggle-input:checked + .toggle-switch::before,
+.preference-input:checked + .preference-switch::before {
+  transform: translateX(20px);
+}
+
+/* Panel Variant */
+.theme-panel {
+  animation: slideInUp 0.4s ease-out;
+  max-width: 400px;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Theme Mode Cards */
+.theme-mode-card {
+  border-color: #e5e7eb;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.dark .theme-mode-card {
+  border-color: #4b5563;
+  background: #374151;
+}
+
+.theme-mode-card:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.dark .theme-mode-card:hover {
+  border-color: #6b7280;
+  background: #4b5563;
+}
+
+.theme-mode-card.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.dark .theme-mode-card.active {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+}
+
+/* Color Scheme Cards */
+.color-scheme-card {
+  transition: all 0.2s ease;
+}
+
+.color-scheme-card:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}
+
+.dark .color-scheme-card:hover {
+  background: #4b5563;
+}
+
+.color-scheme-card.active {
+  background: #eff6ff;
+  transform: translateY(-2px);
+}
+
+.dark .color-scheme-card.active {
+  background: #1e3a8a;
+}
+
+.color-swatch {
+  border-color: #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.dark .color-swatch {
+  border-color: #4b5563;
+}
+
+/* Font Options */
+.font-size-option,
+.font-family-option {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.dark .font-size-option,
+.dark .font-family-option {
+  border-color: #4b5563;
+  background: #374151;
+  color: #9ca3af;
+}
+
+.font-size-option:hover,
+.font-family-option:hover {
+  border-color: #9ca3af;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.dark .font-size-option:hover,
+.dark .font-family-option:hover {
+  border-color: #6b7280;
+  background: #4b5563;
+  color: #f3f4f6;
+}
+
+.font-size-option.active,
+.font-family-option.active {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+/* Preference Toggles */
+.preference-toggle {
+  transition: background-color 0.2s ease;
+}
+
+.preference-toggle:hover {
+  background: #f9fafb;
+}
+
+.dark .preference-toggle:hover {
+  background: #4b5563;
+}
+
+/* Reset Button */
+.reset-btn,
+.reset-action {
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover,
+.reset-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .reset-btn:hover,
+.dark .reset-action:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Animations States */
+.is-animating .dropdown-content {
+  animation: dropdownClose 0.15s ease-in;
+}
+
+@keyframes dropdownClose {
+  from {
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scaleY(0.8) translateY(-10px);
+  }
+}
+
+.is-changing {
+  pointer-events: none;
+}
+
+.is-changing .theme-toggle-btn {
+  opacity: 0.7;
+}
+
+/* Loading States */
+.theme-toggle-btn .animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Accessibility */
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.theme-option:focus-visible,
+.color-scheme-option:focus-visible,
+.theme-mode-card:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .dropdown-content,
+  .theme-mode-card,
+  .color-scheme-card,
+  .theme-toggle-btn,
+  .theme-icon {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .theme-toggle-btn:hover,
+  .theme-mode-card:hover,
+  .color-scheme-card:hover {
+    transform: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .theme-toggle-btn,
+  .theme-option,
+  .theme-mode-card,
+  .color-scheme-card {
+    border-width: 2px !important;
+  }
+
+  .theme-option.active,
+  .theme-mode-card.active,
+  .color-scheme-card.active {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .theme-toggle {
+    display: none !important;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dropdown-content {
+    min-width: 250px;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .theme-panel {
+    max-width: none;
+    width: 100%;
+  }
+
+  .color-schemes .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .theme-modes .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .font-options .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .size-md .theme-toggle-btn,
+  .size-lg .theme-toggle-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .dropdown-content {
+    min-width: 200px;
+  }
+
+  .theme-mode-card {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .color-schemes .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Dark Mode Specific Adjustments */
+.dark .theme-toggle {
+  color-scheme: dark;
+}
+
+/* Custom Properties */
+:root {
+  --theme-toggle-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --theme-toggle-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --theme-toggle-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark {
+  --theme-toggle-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --theme-toggle-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Apply custom properties */
+.theme-toggle-btn,
+.theme-mode-card,
+.color-scheme-card {
+  transition: var(--theme-toggle-transition);
+  box-shadow: var(--theme-toggle-shadow);
+}
+
+.theme-toggle-btn:hover,
+.theme-mode-card:hover,
+.color-scheme-card:hover {
+  box-shadow: var(--theme-toggle-shadow-hover);
+}

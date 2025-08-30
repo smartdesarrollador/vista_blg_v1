@@ -1,0 +1,134 @@
+<!-- Social Share Container -->
+<div [class]="getContainerClasses()">
+  <!-- Native Share Button (if supported) -->
+  @if (hasNativeShare()) {
+  <button
+    (click)="onNativeShare()"
+    class="native-share-btn inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 mb-4"
+    aria-label="Compartir usando el sistema nativo"
+  >
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path
+        d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+      ></path>
+    </svg>
+    @if (showLabels) {
+    <span>Compartir</span>
+    }
+  </button>
+  }
+
+  <!-- Platform Buttons Container -->
+  <div class="platforms-container">
+    <!-- Social Platform Buttons -->
+    @for (platform of availablePlatforms(); track trackByPlatform($index,
+    platform)) {
+    <button
+      [class]="getPlatformClasses(platform)"
+      [style.color]="variant === 'default' ? platform.color : null"
+      [style.border-color]="variant === 'outline' ? platform.color : null"
+      [attr.aria-label]="platform.ariaLabel"
+      [title]="platform.ariaLabel"
+      (click)="onPlatformShare(platform)"
+    >
+      <!-- Platform Icon -->
+      <span
+        class="platform-icon"
+        [innerHTML]="getPlatformIcon(platform.icon)"
+      ></span>
+
+      <!-- Platform Label -->
+      @if (showLabels) {
+      <span class="platform-label">{{ platform.name }}</span>
+      }
+
+      <!-- Share Count -->
+      @if (showCounts && shareCount()[platform.name.toLowerCase()]) {
+      <span class="share-count">
+        {{ shareCount()[platform.name.toLowerCase()] }}
+      </span>
+      }
+    </button>
+    }
+
+    <!-- Copy URL Button -->
+    @if (hasCopyOption()) {
+    <button
+      class="copy-btn platform-btn"
+      [class.copying]="copying()"
+      [attr.aria-label]="copying() ? 'Enlace copiado!' : 'Copiar enlace'"
+      [title]="copying() ? 'Enlace copiado!' : 'Copiar enlace'"
+      (click)="onCopyUrl()"
+      [disabled]="copying()"
+    >
+      <!-- Copy Icon -->
+      <span class="platform-icon">
+        @if (copying()) {
+        <!-- Check Icon -->
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path
+            fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        } @else {
+        <!-- Copy Icon -->
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z"></path>
+          <path
+            d="M3 5a2 2 0 012-2 3 3 0 003 3h6a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 00-1.414 1.414L15 8.414V11.586z"
+          ></path>
+        </svg>
+        }
+      </span>
+
+      <!-- Copy Label -->
+      @if (showLabels) {
+      <span class="platform-label">
+        @if (copying()) { ¡Copiado! } @else { Copiar enlace }
+      </span>
+      }
+    </button>
+    }
+  </div>
+
+  <!-- Additional Info -->
+  @if (showCounts && layout === 'vertical') {
+  <div
+    class="share-info mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
+  >
+    <div class="text-sm text-gray-600 dark:text-gray-400 text-center">
+      @if (hasShareCounts()) {
+      <span class="flex items-center justify-center gap-1">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+          ></path>
+        </svg>
+        Total de shares:
+        {{ totalShares() }}
+      </span>
+      } @else {
+      <span>Comparte este contenido</span>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Floating Variant Toggle -->
+  @if (variant === 'floating') {
+  <button
+    class="floating-toggle fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50"
+    [class.active]="false"
+    (click)="$event.preventDefault()"
+    aria-label="Opciones de compartir"
+  >
+    <svg class="w-6 h-6 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+      <path
+        d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+      ></path>
+    </svg>
+  </button>
+  }
+</div>

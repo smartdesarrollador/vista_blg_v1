@@ -1,0 +1,314 @@
+/* ===== BLOG PAGINATION COMPONENT STYLES ===== */
+
+/* Animaciones personalizadas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Clases de utilidad personalizadas */
+.pagination-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pagination-button {
+  @apply transition-all duration-300 ease-in-out;
+  @apply transform hover:scale-105 active:scale-95;
+  @apply focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply focus:outline-none;
+}
+
+.pagination-button:hover {
+  @apply shadow-md;
+  animation: bounce 0.6s ease-in-out;
+}
+
+.pagination-button-active {
+  @apply bg-blue-600 text-white shadow-lg;
+  @apply ring-2 ring-blue-500 ring-offset-1;
+}
+
+.pagination-button-disabled {
+  @apply opacity-50 cursor-not-allowed;
+  @apply hover:scale-100 hover:shadow-none;
+}
+
+.pagination-button-disabled:hover {
+  animation: none;
+}
+
+.pagination-ellipsis {
+  @apply text-gray-400 dark:text-gray-500;
+  animation: pulse 2s infinite;
+}
+
+.pagination-jump-input {
+  @apply transition-all duration-300;
+  @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  @apply focus:shadow-md;
+}
+
+.pagination-info {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+  animation: slideInUp 0.4s ease-out;
+}
+
+.load-more-container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.load-more-button {
+  @apply transition-all duration-300 ease-in-out;
+  @apply transform hover:scale-105 active:scale-95;
+  @apply focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  @apply focus:outline-none;
+  @apply relative overflow-hidden;
+}
+
+.load-more-button:hover {
+  @apply shadow-lg;
+}
+
+.load-more-button::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+  @apply transform -skew-x-12 -translate-x-full;
+  @apply transition-transform duration-700;
+}
+
+.load-more-button:hover::before {
+  @apply translate-x-full;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+.loading-dots::after {
+  content: "";
+  animation: pulse 1.5s infinite;
+}
+
+/* Estados de hover específicos */
+.pagination-first:hover,
+.pagination-last:hover {
+  @apply bg-gray-100 dark:bg-gray-700;
+}
+
+.pagination-prev:hover,
+.pagination-next:hover {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+  @apply text-blue-700 dark:text-blue-300;
+}
+
+.pagination-number:hover {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+  @apply text-blue-700 dark:text-blue-300;
+  @apply border-blue-300 dark:border-blue-600;
+}
+
+/* Dark mode específico */
+.dark .pagination-button {
+  @apply border-gray-600 text-gray-300;
+}
+
+.dark .pagination-button:hover {
+  @apply border-gray-500 text-gray-200;
+}
+
+.dark .pagination-button-active {
+  @apply bg-blue-600 border-blue-600 text-white;
+}
+
+.dark .pagination-jump-input {
+  @apply bg-gray-800 border-gray-600 text-gray-200;
+  @apply focus:border-blue-500 focus:ring-blue-500;
+}
+
+.dark .load-more-button {
+  @apply bg-gray-800 border-gray-600 text-gray-200;
+  @apply hover:bg-gray-700 hover:border-gray-500;
+}
+
+/* Responsive específico */
+@media (max-width: 640px) {
+  .pagination-container {
+    @apply flex-col space-y-4;
+  }
+
+  .pagination-buttons {
+    @apply justify-center;
+  }
+
+  .pagination-info {
+    @apply text-center text-xs;
+  }
+
+  .pagination-jump-container {
+    @apply flex-col items-center space-y-2;
+  }
+
+  .pagination-jump-input {
+    @apply w-20 text-center;
+  }
+}
+
+@media (max-width: 480px) {
+  .pagination-button {
+    @apply px-2 py-1 text-sm;
+  }
+
+  .pagination-number {
+    @apply min-w-[32px] h-8;
+  }
+
+  .load-more-button {
+    @apply w-full text-center;
+  }
+}
+
+/* Estados de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .pagination-container,
+  .pagination-button,
+  .pagination-info,
+  .load-more-container,
+  .load-more-button,
+  .loading-spinner {
+    animation: none;
+  }
+
+  .pagination-button:hover {
+    @apply transform-none;
+  }
+
+  .load-more-button:hover {
+    @apply transform-none;
+  }
+}
+
+/* Focus visible para mejor accesibilidad */
+.pagination-button:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+.load-more-button:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+.pagination-jump-input:focus-visible {
+  @apply ring-2 ring-blue-500 ring-offset-2;
+  @apply outline-none;
+}
+
+/* Estados de alta contraste */
+@media (prefers-contrast: high) {
+  .pagination-button {
+    @apply border-2 border-black dark:border-white;
+  }
+
+  .pagination-button-active {
+    @apply bg-black dark:bg-white text-white dark:text-black;
+    @apply border-black dark:border-white;
+  }
+
+  .load-more-button {
+    @apply border-2 border-black dark:border-white;
+  }
+}
+
+/* Print styles */
+@media print {
+  .pagination-container,
+  .load-more-container {
+    @apply hidden;
+  }
+}
+
+/* Skeleton loader para paginación */
+.pagination-skeleton {
+  @apply animate-pulse;
+}
+
+.pagination-skeleton .skeleton-button {
+  @apply bg-gray-200 dark:bg-gray-700 rounded;
+  @apply h-10 w-10;
+}
+
+.pagination-skeleton .skeleton-info {
+  @apply bg-gray-200 dark:bg-gray-700 rounded;
+  @apply h-4 w-32;
+}
+
+/* Efectos de scroll smooth */
+.pagination-container {
+  scroll-margin-top: 100px;
+}
+
+/* Utilidades específicas del componente */
+.pagination-visible {
+  @apply opacity-100 pointer-events-auto;
+}
+
+.pagination-hidden {
+  @apply opacity-0 pointer-events-none;
+}
+
+.pagination-compact .pagination-button {
+  @apply px-2 py-1 text-sm;
+}
+
+.pagination-large .pagination-button {
+  @apply px-4 py-3 text-lg;
+}

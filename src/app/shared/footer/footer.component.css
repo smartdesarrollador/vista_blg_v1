@@ -1,0 +1,35 @@
+/* Estilos para enlaces del footer */
+a {
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--color-primario) !important;
+}
+
+/* Efectos de transición para los iconos de redes sociales */
+.social-icon {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icon:hover {
+  transform: translateY(-3px);
+  color: var(--color-primario) !important;
+}
+
+/* Mejorar espaciado en dispositivos móviles */
+@media (max-width: 768px) {
+  .footer-grid {
+    gap: 2rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-links {
+    margin-top: 1rem;
+    justify-content: center;
+  }
+}
