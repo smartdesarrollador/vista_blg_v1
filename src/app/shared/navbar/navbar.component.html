@@ -8,9 +8,11 @@
       <div class="flex items-center">
         <a routerLink="/" class="flex-shrink-0 flex items-center">
           <!-- Logo desde la configuración -->
-          <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo" class="h-8 w-auto" />
+          <!-- <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo" class="h-8 w-auto" /> -->
+          <!-- Logo estático -->
+          <img src="assets/logo/logo.png" alt="Logo" class="h-8 w-auto" />
           <!-- Icono por defecto si no hay logo -->
-          <svg
+          <!-- <svg
             *ngIf="!logoUrl"
             xmlns="http://www.w3.org/2000/svg"
             class="h-8 w-8"
@@ -23,7 +25,7 @@
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.5a1 1 0 102 0V5zM10 9a1 1 0 100-2 1 1 0 000 2z"
               clip-rule="evenodd"
             />
-          </svg>
+          </svg> -->
           <span class="ml-2 text-xl font-bold" [style.color]="colorTexto">
             {{ nombreSitio }}
           </span>

@@ -60,7 +60,8 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component: InicioComponent,
+        redirectTo: '/blog/categoria/desarrollo-web',
+        pathMatch: 'full',
       },
       {
         path: 'about',

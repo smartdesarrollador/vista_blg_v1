@@ -99,7 +99,7 @@ export class FooterComponent implements OnInit {
         }
 
         // Obtener URL del logo
-        this.cargarLogoUrl();
+        // this.cargarLogoUrl();
 
         // Aplicar estilos CSS
         this.aplicarEstilos();
@@ -113,22 +113,22 @@ export class FooterComponent implements OnInit {
     });
   }
 
-  cargarLogoUrl(): void {
-    if (this.configuraciones && this.configuraciones['logo_footer']) {
-      this.configuracionesService
-        .getImagenUrl('logo_footer')
-        .subscribe((url) => {
-          this.logoUrl = url;
-        });
-    } else if (this.configuraciones && this.configuraciones['logo_principal']) {
-      // Si no hay logo específico para el footer, usar el principal
-      this.configuracionesService
-        .getImagenUrl('logo_principal')
-        .subscribe((url) => {
-          this.logoUrl = url;
-        });
-    }
-  }
+  // cargarLogoUrl(): void {
+  //   if (this.configuraciones && this.configuraciones['logo_footer']) {
+  //     this.configuracionesService
+  //       .getImagenUrl('logo_footer')
+  //       .subscribe((url) => {
+  //         this.logoUrl = url;
+  //       });
+  //   } else if (this.configuraciones && this.configuraciones['logo_principal']) {
+  //     // Si no hay logo específico para el footer, usar el principal
+  //     this.configuracionesService
+  //       .getImagenUrl('logo_principal')
+  //       .subscribe((url) => {
+  //         this.logoUrl = url;
+  //       });
+  //   }
+  // }
 
   aplicarEstilos(): void {
     // Solo ejecutar en el navegador

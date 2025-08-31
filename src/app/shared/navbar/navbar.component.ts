@@ -102,7 +102,7 @@ export class NavbarComponent implements OnInit {
         this.colorEnlaces = configuraciones['color_enlaces'] || '#2563EB';
 
         // Obtener URL del logo
-        this.cargarLogoUrl();
+        // this.cargarLogoUrl();
 
         // Aplicar estilos CSS dinámicamente
         this.aplicarEstilos();
@@ -113,15 +113,15 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  cargarLogoUrl(): void {
-    if (this.configuraciones && this.configuraciones['logo_principal']) {
-      this.configuracionesService
-        .getImagenUrl('logo_principal')
-        .subscribe((url) => {
-          this.logoUrl = url;
-        });
-    }
-  }
+  // cargarLogoUrl(): void {
+  //   if (this.configuraciones && this.configuraciones['logo_principal']) {
+  //     this.configuracionesService
+  //       .getImagenUrl('logo_principal')
+  //       .subscribe((url) => {
+  //         this.logoUrl = url;
+  //       });
+  //   }
+  // }
 
   cargarCategoriasPopulares(): void {
     this.categoriaService.getPopularCategories(5).subscribe({
